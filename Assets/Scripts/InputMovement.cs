@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class InputMovement : MonoBehaviour
@@ -9,6 +8,7 @@ public class InputMovement : MonoBehaviour
     public float percent;
     public float changeSpeedInterval;
     float startTimer;
+    float dropTimer;
 
     public float initialSpeed;
     public float targetSpeed;
@@ -18,7 +18,7 @@ public class InputMovement : MonoBehaviour
     //Movement Checks
     public float horizontalInput;
     public float jumpForce;
-
+    public float dropElapsed;
     public bool isGrounded;
 
     public int playerLayer;
@@ -30,6 +30,7 @@ public class InputMovement : MonoBehaviour
     SpriteRenderer spriteRendererComponent;
 
     bool isFacingRight = true;
+    private bool dropping;
 
     void Awake()
     {
@@ -50,13 +51,20 @@ public class InputMovement : MonoBehaviour
         initialSpeed = 0;
         speed = 0;
         // reset the timer
-        ResetTimer();
-    }
+        ResetTimer(startTimer);
+        ResetTimer(dropTimer);
 
+    }
+    void FixedUpdate()
+    {
+        // move toward the target position using the interpolated speed
+        transform.position = Vector2.MoveTowards(transform.position, transform.position + Vector3.right * horizontalInput, LerpSpeed() * Time.deltaTime);
+
+    }
     // Update is called once per frame
     void Update()
     {
-
+        DropDownCheck();
         Debug.DrawLine(lineCastStart.position, lineCastEnd.position, Color.green);
 
         // Check if grounded
@@ -70,12 +78,19 @@ public class InputMovement : MonoBehaviour
         {
             //ShootHook
         }
-
-        if(Input.GetButtonDown("Jump") && isGrounded)
+        ResetTimer(dropTimer);
+        if (Input.GetButtonDown("Jump"))
         {
-            print("Jump!");
-            StartCoroutine("JumpOff");
-            print("Jumped!");
+            if (!dropping)
+            {
+                ResetTimer(dropTimer);
+                dropping = true;
+            }
+            //print("Jump!");
+            //transform.position = Vector2.MoveTowards(transform.position, transform.position + Vector3.up * Input.GetAxis("Vertical"), 10 * Time.deltaTime);
+            
+            //StartCoroutine("JumpOff");
+            //print("Jumped!");
 
         }
         // Flip sprite
@@ -95,20 +110,35 @@ public class InputMovement : MonoBehaviour
         animatorComponent.SetBool("isGrounded", isGrounded);
 
     }
-    IEnumerable JumpOff()
+    //public IEnumerable JumpOff()
+    //{
+    //    print("Jump!");
+    //    gameObject.GetComponent<Collider2D>().enabled = false;
+    //    //Physics2D.IgnoreLayerCollision(playerLayer, groundLayer, true);
+    //    yield return new WaitForSeconds(0.4f);
+    //    gameObject.GetComponent<Collider2D>().enabled = true;
+    //    //Physics2D.IgnoreLayerCollision(playerLayer, groundLayer, false);
+    //}
+    void DropDownCheck()
     {
-        box.enabled= false;
-        Physics2D.IgnoreLayerCollision(playerLayer, groundLayer, true);
-        yield return new WaitForSeconds(0.4f);
-        box.enabled = true;
-        Physics2D.IgnoreLayerCollision(playerLayer, groundLayer, false);
-    }
-    void FixedUpdate()
-    {
-        // move toward the target position using the interpolated speed
-        transform.position = Vector2.MoveTowards(transform.position, transform.position + Vector3.right * horizontalInput, LerpSpeed() * Time.deltaTime);
+        if (dropping)
+        {
+            print("Drop!");
+            gameObject.GetComponent<Collider2D>().enabled = false;
 
+            dropElapsed += Time.deltaTime;
+            if (dropElapsed > 0.4f)
+            {
+                print("Dropped!");
+
+                gameObject.GetComponent<Collider2D>().enabled = true;
+                dropElapsed = 0f;
+                dropping = false;
+
+            }
+        }
     }
+
 
     float LerpSpeed()
     {
@@ -122,7 +152,7 @@ public class InputMovement : MonoBehaviour
             float percent = timeElapsed / changeSpeedInterval;
             if (percent > 1)
             {
-                ResetTimer();
+                ResetTimer(startTimer);
             }
             // calculate the current speed, using percent and the animation curve
             return speed = Mathf.Lerp(initialSpeed, targetSpeed, animationCurve.Evaluate(percent));
@@ -137,9 +167,9 @@ public class InputMovement : MonoBehaviour
 
     }
 
-    void ResetTimer()
+    void ResetTimer(float t)
     {
-        startTimer = Time.time;
+        t = Time.time;
     }
 
 }
