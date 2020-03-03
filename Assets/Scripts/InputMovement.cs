@@ -6,6 +6,7 @@ public class InputMovement : MonoBehaviour
     //Lerping Movement Speed
     public float speed;
     public float slowedSpeed;
+    public float jumpVelocity;
     public float percent;
     public float changeSpeedInterval;
     private float startTimer = 0;
@@ -18,19 +19,27 @@ public class InputMovement : MonoBehaviour
 
     //Movement Checks
     public float horizontalInput;
+    [Range (1, 10)]
     public float jumpForce;
     public float dropElapsed;
+    public bool isCrossing;
     public bool isGrounded;
     public bool isAiming;
+    public bool isJumping;
+    public bool doubleJumped;
+    public bool checkingGround;
 
     public int playerLayer;
     public int groundLayer;
     public Transform lineCastStart;
     public Transform lineCastEnd;
+    public Transform lineCastUpStart;
+    public Transform lineCastUpEnd;
+
     public BoxTarget2D box;
     Animator animatorComponent;
     SpriteRenderer spriteRendererComponent;
-
+    public Rigidbody2D rb;
     public ObjMover mover;
 
     bool isFacingRight = true;
@@ -41,7 +50,7 @@ public class InputMovement : MonoBehaviour
         // Get references to components
         animatorComponent = GetComponent<Animator>();
         spriteRendererComponent = GetComponent<SpriteRenderer>();
-
+        rb = GetComponent<Rigidbody2D>();
         playerLayer = LayerMask.GetMask("Player");
         groundLayer = LayerMask.GetMask("Ground");
         isFacingRight = true;
@@ -59,12 +68,21 @@ public class InputMovement : MonoBehaviour
     void Update()
     {
         Debug.DrawLine(lineCastStart.position, lineCastEnd.position, Color.green);
+        Debug.DrawLine(lineCastUpStart.position, lineCastUpEnd.position, Color.blue);
+
+        
 
         // Check if grounded
         isGrounded = (Physics2D.Linecast(lineCastStart.position, lineCastEnd.position, groundLayer)) ? true : false;
+        isCrossing = (Physics2D.Linecast(lineCastUpStart.position, lineCastUpEnd.position, groundLayer)) ? true : false;
         isAiming = Input.GetKey(KeyCode.J);
+        if (isGrounded)
+        {
+            doubleJumped = !isGrounded;
+            isJumping = !isGrounded;
+        }
 
-        DropDownCheck();
+        ColliderCheck();
 
         InputHandler();
         // Sprite Animation Parameters
@@ -102,6 +120,27 @@ public class InputMovement : MonoBehaviour
                     dropping = true;
                 }
             }
+
+            if (isGrounded && !isJumping)
+            {
+                if (Input.GetKeyDown(KeyCode.N))
+                {
+                    isJumping = true;
+                    rb.AddRelativeForce(Vector2.up * jumpVelocity + new Vector2( Input.GetAxisRaw("Horizontal")*0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                }
+            }
+
+            if (!isGrounded && !doubleJumped)
+            {
+                if (Input.GetKeyDown(KeyCode.N))
+                {
+                    doubleJumped = true;
+                    rb.AddRelativeForce(Vector2.up * jumpVelocity + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                    
+                }
+
+            }
+            
         }
 
     }
@@ -155,19 +194,31 @@ public class InputMovement : MonoBehaviour
 
     }
 
-    void DropDownCheck()
+    void ColliderCheck()
     {
         if (dropping)
         {
+            checkingGround = false;
             gameObject.GetComponent<Collider2D>().enabled = false;
 
             dropElapsed += Time.deltaTime;
             if (dropElapsed > 0.4f)
             {
+                checkingGround = true;
+
                 gameObject.GetComponent<Collider2D>().enabled = true;
                 dropElapsed = 0f;
                 dropping = false;
             }
+        }
+        if (isCrossing)
+        {
+            gameObject.GetComponent<Collider2D>().enabled = false;
+        }
+        if (isGrounded&& checkingGround)
+        {
+            gameObject.GetComponent<Collider2D>().enabled = true;
+
         }
     }
 
@@ -192,10 +243,15 @@ public class InputMovement : MonoBehaviour
             {
                 startTimer = 10f;
             }
-            if (Input.GetButtonUp("Horizontal") && speed != 0f)
+            if (Input.GetButtonUp("Horizontal") && speed != 0f&& !isJumping)
             {
-                return speed = 0f;
+                return speed = 0.1f;
             }
+
+        }
+        if (!isGrounded)
+        {
+            speed *= 0.5f;
         }
         return speed = Mathf.Lerp(speed, 0f, animationCurve.Evaluate(percent));
     }
