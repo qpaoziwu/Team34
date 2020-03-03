@@ -2,19 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Shoot : MonoBehaviour
+public class ObjMover : MonoBehaviour
 {
     [SerializeField] private AnimationCurve chargeCurve;
-
     [SerializeField] private float fireRate;
     [SerializeField] private float shotForce;
     [SerializeField] private float maxForce;
     [SerializeField] private float minForce;
     [SerializeField] private float chargeTime;
-
-    [SerializeField] Transform bulletSpawn;
+    public BoxTarget2D box;
     [SerializeField] AnimationCurve fallCurve;
-
+    public Transform GrabTarget;
 
     bool canFire = true;
 
@@ -82,38 +80,32 @@ public class Shoot : MonoBehaviour
         canFire = true;
     }
 
-    public void FireBullet(List<Transform> bullets)
+    public void FireBullet(Transform obj,Transform start,Transform end)
     {
-        if (canFire && bullets.Count > 0)
+        if (canFire)
         {
-            Rigidbody bulletBody = bullets[bullets.Count - 1].GetComponent<Rigidbody>();
 
-            bullets[bullets.Count - 1].transform.position = bulletSpawn.position;
-            bullets[bullets.Count - 1].transform.rotation = bulletSpawn.rotation;
-            bullets[bullets.Count - 1].transform.parent = null;
-            bulletBody.useGravity = true;
-            //bulletBody.AddForce(bulletSpawn.transform.forward * shotForce, ForceMode.Impulse);
-
-            bulletBody.velocity = Vector3.zero;
-            bulletBody.transform.parent = null;
-            bullets.Remove(bullets[bullets.Count - 1]);
-
-            //Vector3 endPoint = GetComponent<PlayerController>().AimPoint.transform.position;
-            //StartCoroutine(BulletTravel(bulletBody, bulletSpawn.position, endPoint));
+            GrabTarget = obj;
+            GrabTarget.GetComponent<BoxCollider2D>().isTrigger = true;
+            StartCoroutine(BulletTravel(obj, start.position, end.position));
             StartShotCooldown();
         }        
     }
 
-    IEnumerator BulletTravel(Rigidbody bulletBody, Vector3 start, Vector3 end)
+    IEnumerator BulletTravel(Transform obj, Vector3 start, Vector3 end)
     {
         float time = 0;
         while(time <= shotForce)
         {
             float percent = time / shotForce;
             time += Time.deltaTime;
-            //end.y = Mathf.Lerp(start.y, GetComponent<PlayerController>().AimPoint.transform.position.y, fallCurve.Evaluate(percent));
-            bulletBody.position = Vector3.Lerp(start, end, percent);
-
+            end.y = Mathf.Lerp(start.y, obj.position.y, fallCurve.Evaluate(percent));
+            obj.position = Vector3.Lerp(start, end, percent);
+            if (percent > .9)
+            {
+                GrabTarget.GetComponent<BoxCollider2D>().isTrigger = false;
+                GrabTarget = null;
+            }
 
             yield return null;
         }

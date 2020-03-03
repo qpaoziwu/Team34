@@ -49,9 +49,10 @@ public class BoxTarget2D : MonoBehaviour
     //Set the layers that can be targeted
     private void AddLayersToList()
     {
-        TaggedLayers.Add(8); //Libee Layer
-        TaggedLayers.Add(10); //Libee Layer
+        TaggedLayers.Add(9); //Player Layer
+        TaggedLayers.Add(10); //Collectible Layer
         TaggedLayers.Add(11); //Enemy Layer
+        TaggedLayers.Add(12); //Terrian Layer
         //TaggedLayers.Add(LayerMask.GetMask("Collectibles")); //Libee Layer
         //TaggedLayers.Add(LayerMask.GetMask("Enemies")); //Enemy Layer
     }
@@ -67,9 +68,12 @@ public class BoxTarget2D : MonoBehaviour
                 {
                     if (!TargetsByRange.Contains(other.gameObject.transform))
                     {
-                        TargetsByRange.Add(other.gameObject.transform);
-                        print(other.gameObject + " in range");
-                        SortListByRange();
+                        if (other.gameObject != this)
+                        {
+                            TargetsByRange.Add(other.gameObject.transform);
+                            print(other.gameObject + " in range");
+                            SortListByRange();
+                        }
                     }
                 }
             }
@@ -96,7 +100,6 @@ public class BoxTarget2D : MonoBehaviour
             if (TargetsByRange[i] == null)
             {
                 TargetsByRange.Remove(TargetsByRange[i]);
-
             }
         }
             TargetsByRange.Sort((x, y) => { return (gameObject.transform.position - x.transform.position).sqrMagnitude.CompareTo((gameObject.transform.position - y.transform.position).sqrMagnitude); });   

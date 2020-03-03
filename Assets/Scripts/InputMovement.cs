@@ -31,7 +31,7 @@ public class InputMovement : MonoBehaviour
     Animator animatorComponent;
     SpriteRenderer spriteRendererComponent;
 
-    public Shoot shoot;
+    public ObjMover mover;
 
     bool isFacingRight = true;
     private bool dropping;
@@ -89,13 +89,11 @@ public class InputMovement : MonoBehaviour
             {
                 print("Hookshot!");
                 Hookshot();
-                
             }
         }
 
         if (!isAiming)
         {
-
             // DropDown Interaction
             if (Input.GetKeyDown(KeyCode.S))
             {
@@ -115,16 +113,33 @@ public class InputMovement : MonoBehaviour
             if (HitDirectionCheck() >= 0.4f)
             {
                 print("Hitting " + box.TargetsByRange[0].name);
-                //shoot at box.TargetsByRange[0]
-            }
-            else
-            {
-                print("and you missed!");
-                //shoot at axis(h,v);
+                //TaggedLayers.Add(9); //Player Layer
+                //TaggedLayers.Add(10); //Collectible Layer
+                //TaggedLayers.Add(11); //Enemy Layer
+                //TaggedLayers.Add(12); //Terrian Layer
+
+                //1) shoot self at Terrian
+                if (box.TargetsByRange[0].gameObject.layer == 12)
+                {
+                    mover.FireBullet(transform, transform, box.TargetsByRange[0]);
+                }
+
+                //2) pull player to self
+                //3) pull collectiable to self
+                if (box.TargetsByRange[0].gameObject.layer == 9 || 
+                    box.TargetsByRange[0].gameObject.layer == 10)
+                {
+                    mover.FireBullet(box.TargetsByRange[0], box.TargetsByRange[0].transform, transform);
+
+                }
+
 
             }
         }
-        else { print("No target in range!");
+        else
+        {
+            print("No target in range!");
+            //shoot at axis(h,v);
         }
     }
 
@@ -139,6 +154,7 @@ public class InputMovement : MonoBehaviour
         return angleToAimpoint;
 
     }
+
     void DropDownCheck()
     {
         if (dropping)
