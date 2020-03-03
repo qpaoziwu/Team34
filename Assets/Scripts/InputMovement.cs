@@ -21,6 +21,7 @@ public class InputMovement : MonoBehaviour
     public float horizontalInput;
     [Range (1, 10)]
     public float jumpForce;
+    public float hookForce;
     public float dropElapsed;
     public bool isCrossing;
     public bool isGrounded;
@@ -173,7 +174,7 @@ public class InputMovement : MonoBehaviour
                         box.TargetsInRange[0].gameObject.layer == 10)
                     {
                         Vector2 dirToSelf = gameObject.transform.position - box.TargetsInRange[0].position;
-                        box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized * jumpVelocity * 3f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                        box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized * jumpVelocity * hookForce + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
                     }
                 }
             }
