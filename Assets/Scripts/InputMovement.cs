@@ -21,9 +21,11 @@ public class InputMovement : MonoBehaviour
 
     public bool isGrounded;
 
+    public int playerLayer;
+    public int groundLayer;
     public Transform lineCastStart;
     public Transform lineCastEnd;
-
+    public BoxCollider2D box;
     Animator animatorComponent;
     SpriteRenderer spriteRendererComponent;
 
@@ -34,6 +36,10 @@ public class InputMovement : MonoBehaviour
         // Get references to components
         animatorComponent = GetComponent<Animator>();
         spriteRendererComponent = GetComponent<SpriteRenderer>();
+        box = GetComponent<BoxCollider2D>();
+        playerLayer = LayerMask.GetMask("Player");
+        groundLayer = LayerMask.GetMask("Ground");
+
 
         isFacingRight = true;
     }
@@ -54,8 +60,7 @@ public class InputMovement : MonoBehaviour
         Debug.DrawLine(lineCastStart.position, lineCastEnd.position, Color.green);
 
         // Check if grounded
-        int groundLayerMask = LayerMask.GetMask("Ground");
-        isGrounded = (Physics2D.Linecast(lineCastStart.position, lineCastEnd.position, groundLayerMask)) ? true : false;
+        isGrounded = (Physics2D.Linecast(lineCastStart.position, lineCastEnd.position, groundLayer)) ? true : false;
 
 
         // Input
@@ -66,8 +71,11 @@ public class InputMovement : MonoBehaviour
             //ShootHook
         }
 
-        if(Input.GetButtonDown("S") && isGrounded)
+        if(Input.GetButtonDown("Jump") && isGrounded)
         {
+            print("Jump!");
+            StartCoroutine("JumpOff");
+            print("Jumped!");
 
         }
         // Flip sprite
@@ -87,7 +95,14 @@ public class InputMovement : MonoBehaviour
         animatorComponent.SetBool("isGrounded", isGrounded);
 
     }
-
+    IEnumerable JumpOff()
+    {
+        box.enabled= false;
+        Physics2D.IgnoreLayerCollision(playerLayer, groundLayer, true);
+        yield return new WaitForSeconds(0.4f);
+        box.enabled = true;
+        Physics2D.IgnoreLayerCollision(playerLayer, groundLayer, false);
+    }
     void FixedUpdate()
     {
         // move toward the target position using the interpolated speed
@@ -113,12 +128,12 @@ public class InputMovement : MonoBehaviour
             return speed = Mathf.Lerp(initialSpeed, targetSpeed, animationCurve.Evaluate(percent));
         }
 
-        //if (Input.GetButtonUp("Horizontal")&& speed!=0f)
-        //{
-        //    return speed = Mathf.Lerp(speed, 0f, animationCurve.Evaluate(percent));
-        //}
+        if (Input.GetButtonUp("Horizontal") && speed != 0f)
+        {
+            return speed = 0f;
+        }
 
-            return speed = Mathf.Lerp(speed, 0f , animationCurve.Evaluate(percent));
+        return speed = Mathf.Lerp(speed, 0f , animationCurve.Evaluate(percent));
 
     }
 
