@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoxTargets : MonoBehaviour
+public class BoxTarget2D : MonoBehaviour
 {
-    [Range(1, 2)]
-    public int AimMode;
+    //[Range(1, 2)]
+    //public int AimMode;
+    //public Vector3 BoxLocation;
+    //public Vector3 BoxSize;
+    //public GameObject AimTarget;
 
-    public GameObject AimTarget;
-    public BoxCollider m_Box;
+    public CircleCollider2D m_Box;
     public bool stopSorting;
-    public Vector3 BoxLocation;
-    public Vector3 BoxSize;
+
     public List<int> TaggedLayers;
     public List<Transform> TargetsByRange;
 
@@ -20,7 +21,7 @@ public class BoxTargets : MonoBehaviour
         //Set Ref. to Box Collider
         if (m_Box != null)
         {
-            m_Box = GetComponent<BoxCollider>();
+            m_Box = GetComponent<CircleCollider2D>();
         }
         else
         {
@@ -28,7 +29,7 @@ public class BoxTargets : MonoBehaviour
         }
 
         //Set Aim Mode
-        SetBoxTransform();
+        //SetBoxTransform();
 
         //Set Target Layers
         AddLayersToList();
@@ -45,34 +46,18 @@ public class BoxTargets : MonoBehaviour
         else return T;
     }
 
-    //Aim Mode 1:
-    //  Set BoxCollider to Scale and Center with Vector3
-    //Aim Mode 2:
-    //  Set BoxCollider to Scale and Center with TongueTarget
-    private void SetBoxTransform()
-    {
-        if (AimMode == 1)
-        {
-            m_Box.size = BoxSize;
-            m_Box.center = Vector3.forward * BoxSize.z / 2f;
-        }
-
-        if (AimMode == 2)
-        {
-            m_Box.size = new Vector3(BoxSize.x, BoxSize.y, AimTarget.transform.position.z);
-            m_Box.center = Vector3.forward * AimTarget.transform.position.z / 2f;
-        }
-    }
-
     //Set the layers that can be targeted
     private void AddLayersToList()
     {
-        TaggedLayers.Add(9); //Libee Layer
-        TaggedLayers.Add(10); //Enemy Layer
+        TaggedLayers.Add(8); //Libee Layer
+        TaggedLayers.Add(10); //Libee Layer
+        TaggedLayers.Add(11); //Enemy Layer
+        //TaggedLayers.Add(LayerMask.GetMask("Collectibles")); //Libee Layer
+        //TaggedLayers.Add(LayerMask.GetMask("Enemies")); //Enemy Layer
     }
 
     //Add all layered objects to TargetsInRange, then Sort by distance
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerStay2D(Collider2D other)
     {
         if (!stopSorting)
         {
@@ -92,7 +77,7 @@ public class BoxTargets : MonoBehaviour
     }
 
     //Remove all objects from TargetsInRange, then Sort by distance
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         if (!stopSorting)
         {
@@ -118,3 +103,21 @@ public class BoxTargets : MonoBehaviour
     }
 
 }
+//Aim Mode 1:
+//  Set BoxCollider to Scale and Center with Vector3
+//Aim Mode 2:
+//  Set BoxCollider to Scale and Center with TongueTarget
+//private void SetBoxTransform()
+//{
+//    if (AimMode == 1)
+//    {
+//        m_Box.size = BoxSize;
+//        m_Box.center = Vector3.forward * BoxSize.z / 2f;
+//    }
+
+//    if (AimMode == 2)
+//    {
+//        m_Box.size = new Vector3(BoxSize.x, BoxSize.y, AimTarget.transform.position.z);
+//        m_Box.center = Vector3.forward * AimTarget.transform.position.z / 2f;
+//    }
+//}

@@ -27,9 +27,11 @@ public class InputMovement : MonoBehaviour
     public int groundLayer;
     public Transform lineCastStart;
     public Transform lineCastEnd;
-    //public BoxCollider2D box;
+    public BoxTarget2D box;
     Animator animatorComponent;
     SpriteRenderer spriteRendererComponent;
+
+    public Shoot shoot;
 
     bool isFacingRight = true;
     private bool dropping;
@@ -64,14 +66,9 @@ public class InputMovement : MonoBehaviour
 
         DropDownCheck();
 
-
-
-
         InputHandler();
         // Sprite Animation Parameters
         AnimateSprite();
-
-
     }
 
     void FixedUpdate()
@@ -90,8 +87,9 @@ public class InputMovement : MonoBehaviour
             speed = Mathf.Clamp(horizontalInput, slowedSpeed, slowedSpeed);
             if (Input.GetKeyDown(KeyCode.K) && isGrounded)
             {
-                Hookshot();
                 print("Hookshot!");
+                Hookshot();
+                
             }
         }
 
@@ -112,9 +110,35 @@ public class InputMovement : MonoBehaviour
 
     void Hookshot()
     {
+        if (box.ClosestTarget(gameObject.transform) != gameObject.transform)
+        {
+            if (HitDirectionCheck() >= 0.4f)
+            {
+                print("Hitting " + box.TargetsByRange[0].name);
+                //shoot at box.TargetsByRange[0]
+            }
+            else
+            {
+                print("and you missed!");
+                //shoot at axis(h,v);
 
+            }
+        }
+        else { print("No target in range!");
+        }
     }
 
+    float HitDirectionCheck()
+    {
+        float angleToTarget = Vector2.Dot(box.TargetsByRange[0].position.normalized, gameObject.transform.position.normalized);
+
+        Vector3 dirToTarget = box.TargetsByRange[0].position - gameObject.transform.position;
+
+        float angleToAimpoint= Vector2.Dot(dirToTarget.normalized, new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")));
+
+        return angleToAimpoint;
+
+    }
     void DropDownCheck()
     {
         if (dropping)
