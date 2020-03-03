@@ -40,7 +40,7 @@ public class InputMovement : MonoBehaviour
     Animator animatorComponent;
     SpriteRenderer spriteRendererComponent;
     public Rigidbody2D rb;
-    public ObjMover mover;
+
 
     bool isFacingRight = true;
     private bool dropping;
@@ -78,6 +78,7 @@ public class InputMovement : MonoBehaviour
         isAiming = Input.GetKey(KeyCode.J);
         if (isGrounded)
         {
+
             doubleJumped = !isGrounded;
             isJumping = !isGrounded;
         }
@@ -103,7 +104,7 @@ public class InputMovement : MonoBehaviour
         if (isAiming)
         {
             speed = Mathf.Clamp(horizontalInput, slowedSpeed, slowedSpeed);
-            if (Input.GetKeyDown(KeyCode.K) && isGrounded)
+            if (Input.GetKeyDown(KeyCode.K))
             {
                 print("Hookshot!");
                 Hookshot();
@@ -135,7 +136,7 @@ public class InputMovement : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.N))
                 {
                     doubleJumped = true;
-                    rb.AddRelativeForce(Vector2.up * jumpVelocity + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                    rb.AddRelativeForce(Vector2.up * jumpVelocity*0.9f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
                     
                 }
 
@@ -147,32 +148,34 @@ public class InputMovement : MonoBehaviour
 
     void Hookshot()
     {
-        if (box.ClosestTarget(gameObject.transform) != gameObject.transform)
+        if (box.TargetsInRange.Count >0)
         {
-            if (HitDirectionCheck() >= 0.4f)
+            if (box.ClosestTarget(gameObject.transform) != gameObject.transform)
             {
-                print("Hitting " + box.TargetsByRange[0].name);
-                //TaggedLayers.Add(9); //Player Layer
-                //TaggedLayers.Add(10); //Collectible Layer
-                //TaggedLayers.Add(11); //Enemy Layer
-                //TaggedLayers.Add(12); //Terrian Layer
-
-                //1) shoot self at Terrian
-                if (box.TargetsByRange[0].gameObject.layer == 12)
+                if (HitDirectionCheck(box.TargetsInRange[0]) >= 0.4f)
                 {
-                    mover.FireBullet(transform, transform, box.TargetsByRange[0]);
+                    print("Hitting " + box.TargetsInRange[0].name);
+                    //TaggedLayers.Add(9); //Player Layer
+                    //TaggedLayers.Add(10); //Collectible Layer
+                    //TaggedLayers.Add(11); //Enemy Layer
+                    //TaggedLayers.Add(12); //Terrian Layer
+
+                    //1) shoot self at Terrian
+                    if (box.TargetsInRange[0].gameObject.layer == 12)
+                    {
+                        Vector2 dirToTarget = box.TargetsInRange[0].position - gameObject.transform.position;
+                        rb.AddRelativeForce(dirToTarget.normalized * jumpVelocity*1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                    }
+
+                    //2) pull player to self
+                    //3) pull collectiable to self
+                    if (box.TargetsInRange[0].gameObject.layer == 9 ||
+                        box.TargetsInRange[0].gameObject.layer == 10)
+                    {
+                        Vector2 dirToSelf = gameObject.transform.position - box.TargetsInRange[0].position;
+                        box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized * jumpVelocity * 3f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                    }
                 }
-
-                //2) pull player to self
-                //3) pull collectiable to self
-                if (box.TargetsByRange[0].gameObject.layer == 9 || 
-                    box.TargetsByRange[0].gameObject.layer == 10)
-                {
-                    mover.FireBullet(box.TargetsByRange[0], box.TargetsByRange[0].transform, transform);
-
-                }
-
-
             }
         }
         else
@@ -182,11 +185,11 @@ public class InputMovement : MonoBehaviour
         }
     }
 
-    float HitDirectionCheck()
+    public float HitDirectionCheck(Transform t)
     {
-        float angleToTarget = Vector2.Dot(box.TargetsByRange[0].position.normalized, gameObject.transform.position.normalized);
+        //float angleToTarget = Vector2.Dot(box.TargetsByRange[0].position.normalized, gameObject.transform.position.normalized);
 
-        Vector3 dirToTarget = box.TargetsByRange[0].position - gameObject.transform.position;
+        Vector3 dirToTarget = t.position - gameObject.transform.position;
 
         float angleToAimpoint= Vector2.Dot(dirToTarget.normalized, new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")));
 
@@ -258,7 +261,7 @@ public class InputMovement : MonoBehaviour
 
     void ResetTimer()
     {
-        startTimer = Time.time;
+        startTimer += Time.time;
     }
 
     void AnimateSprite()

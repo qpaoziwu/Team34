@@ -8,13 +8,13 @@ public class BoxTarget2D : MonoBehaviour
     //public int AimMode;
     //public Vector3 BoxLocation;
     //public Vector3 BoxSize;
-    //public GameObject AimTarget;
 
+    public InputMovement Player;
     public CircleCollider2D m_Box;
     public bool stopSorting;
 
     public List<int> TaggedLayers;
-    public List<Transform> TargetsByRange;
+    public List<Transform> TargetsInRange;
 
     void Awake()
     {
@@ -39,9 +39,9 @@ public class BoxTarget2D : MonoBehaviour
     //Return T if List is null
     public Transform ClosestTarget(Transform T)
     {
-        if (TargetsByRange.Count > 0)
+        if (TargetsInRange.Count > 0)
         {
-            return TargetsByRange[0];
+            return TargetsInRange[0];
         }
         else return T;
     }
@@ -62,17 +62,18 @@ public class BoxTarget2D : MonoBehaviour
     {
         if (!stopSorting)
         {
+            SortByDots();
             for (int i = TaggedLayers.Count - 1; i >= 0; i--)
             {
                 if (other.gameObject.layer == (TaggedLayers[i]))
                 {
-                    if (!TargetsByRange.Contains(other.gameObject.transform))
+                    if (!TargetsInRange.Contains(other.gameObject.transform))
                     {
                         if (other.gameObject != this)
                         {
-                            TargetsByRange.Add(other.gameObject.transform);
+                            TargetsInRange.Add(other.gameObject.transform);
                             print(other.gameObject + " in range");
-                            SortListByRange();
+                            
                         }
                     }
                 }
@@ -85,27 +86,41 @@ public class BoxTarget2D : MonoBehaviour
     {
         if (!stopSorting)
         {
-            if (TargetsByRange.Contains(other.gameObject.transform))
+            if (TargetsInRange.Contains(other.gameObject.transform))
             {
-                TargetsByRange.Remove(other.gameObject.transform);
-                SortListByRange();
+                TargetsInRange.Remove(other.gameObject.transform);
+
             }
         }
     }
 
-    private void SortListByRange()
+    public void SortByDots()
     {
-        for (int i = TargetsByRange.Count - 1; i >= 0; i--)
+        for (int i = TargetsInRange.Count - 1; i >= 0; i--)
         {
-            if (TargetsByRange[i] == null)
+            if (TargetsInRange[i] == null)
             {
-                TargetsByRange.Remove(TargetsByRange[i]);
+                TargetsInRange.Remove(TargetsInRange[i]);
             }
-        }
-            TargetsByRange.Sort((x, y) => { return (gameObject.transform.position - x.transform.position).sqrMagnitude.CompareTo((gameObject.transform.position - y.transform.position).sqrMagnitude); });   
+        } TargetsInRange.Sort((y, x) => { return (Player.HitDirectionCheck(x).CompareTo(Player.HitDirectionCheck(y)));}); 
     }
+        
 
 }
+
+//    private void SortListByRange()
+//    {
+//        for (int i = TargetsByRange.Count - 1; i >= 0; i--)
+//        {
+//            if (TargetsByRange[i] == null)
+//            {
+//                TargetsByRange.Remove(TargetsByRange[i]);
+//            }
+//        }
+//            TargetsByRange.Sort((x, y) => { return (gameObject.transform.position - x.transform.position).sqrMagnitude.CompareTo((gameObject.transform.position - y.transform.position).sqrMagnitude); });   
+//    }
+
+//}
 //Aim Mode 1:
 //  Set BoxCollider to Scale and Center with Vector3
 //Aim Mode 2:
