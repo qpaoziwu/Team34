@@ -41,7 +41,7 @@ public class Shoot : MonoBehaviour
         }
     }
 
-    public void StartCharge(Rewired.Player p)
+    public void StartCharge(Input p)
     {
         if (chargeRoutine == null)
         {
@@ -59,7 +59,7 @@ public class Shoot : MonoBehaviour
         }
     }
 
-    public IEnumerator BuildForce(Rewired.Player p)
+    public IEnumerator BuildForce(Input p)
     {
         shotForce = minForce;
         float time = 0;
@@ -98,8 +98,8 @@ public class Shoot : MonoBehaviour
             bulletBody.transform.parent = null;
             bullets.Remove(bullets[bullets.Count - 1]);
 
-            Vector3 endPoint = GetComponent<PlayerController>().AimPoint.transform.position;
-            StartCoroutine(BulletTravel(bulletBody, bulletSpawn.position, endPoint));
+            //Vector3 endPoint = GetComponent<PlayerController>().AimPoint.transform.position;
+            //StartCoroutine(BulletTravel(bulletBody, bulletSpawn.position, endPoint));
             StartShotCooldown();
         }        
     }
@@ -111,7 +111,7 @@ public class Shoot : MonoBehaviour
         {
             float percent = time / shotForce;
             time += Time.deltaTime;
-            end.y = Mathf.Lerp(start.y, GetComponent<PlayerController>().AimPoint.transform.position.y, fallCurve.Evaluate(percent));
+            //end.y = Mathf.Lerp(start.y, GetComponent<PlayerController>().AimPoint.transform.position.y, fallCurve.Evaluate(percent));
             bulletBody.position = Vector3.Lerp(start, end, percent);
 
 

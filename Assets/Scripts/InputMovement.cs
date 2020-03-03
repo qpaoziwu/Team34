@@ -66,7 +66,10 @@ public class InputMovement : MonoBehaviour
             //ShootHook
         }
 
+        if(Input.GetButtonDown("S") && isGrounded)
+        {
 
+        }
         // Flip sprite
         if (horizontalInput < 0 && isFacingRight)
         {
