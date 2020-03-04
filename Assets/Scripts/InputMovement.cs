@@ -272,7 +272,9 @@ public class InputMovement : MonoBehaviour
                         Vector2 dirToTarget = box.TargetsInRange[0].position - gameObject.transform.position;
 
                         StartCoroutine(RopeItUp(box.TargetsInRange[0].transform,false));
-                        rb.AddRelativeForce(dirToTarget.normalized * jumpVelocity*1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                        rb.velocity = (dirToTarget.normalized * jumpVelocity * 1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime);
+
+                        //rb.AddRelativeForce(dirToTarget.normalized * jumpVelocity*1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
 
                     }
 

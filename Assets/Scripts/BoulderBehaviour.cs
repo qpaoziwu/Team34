@@ -7,7 +7,7 @@ public class BoulderBehaviour : MonoBehaviour
 
     private void Update()
     {
-        if(transform.position.y > Screen.height)
+        if(transform.position.y > -10)
         {
             Destroy(this.gameObject);
         }
