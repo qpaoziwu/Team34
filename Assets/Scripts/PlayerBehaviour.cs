@@ -16,6 +16,7 @@ public class PlayerBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        print(lives);
         if(isLosingLife == true)
         {
             lives -= 1;
