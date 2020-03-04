@@ -12,6 +12,7 @@ public class BoulderSpawner : MonoBehaviour
     public GameObject boulder;
     public GameObject exclimationMarkIcon;
     private bool spawnBoulder; // This variable is responsible for spawning a boulder
+    [SerializeField]
     private float maxTime;
 
 
