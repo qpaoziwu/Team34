@@ -31,11 +31,12 @@ public class LevelController : MonoBehaviour
     {
         StartCoroutine(Timer());
         pool = GameObject.FindGameObjectWithTag("ObjectPooler").GetComponent<ObjectPooler>();
-        player = GameObject.FindGameObjectsWithTag("Player");
     }
 
     private void Update()
     {
+        retart();
+        print(player.Length);
         if (height - heightOfPreviousPlatform > heightDiffBetweenPlatforms)
         {
             CreatePlatform(pool.Pull(0));
@@ -90,9 +91,12 @@ public class LevelController : MonoBehaviour
 
     private void retart()
     {
-        if(player.Length <= 0)
+
+        player = GameObject.FindGameObjectsWithTag("Player");
+        if (player.Length <= 0)
         {
-            
+            //Go to next scene
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
         }
     }
 }

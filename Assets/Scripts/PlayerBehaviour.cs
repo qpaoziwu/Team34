@@ -29,6 +29,7 @@ public class PlayerBehaviour : MonoBehaviour
         {
             //This is where one player will be eleminated 
             //If the ammount of objects witht he player tag is less or equal to zero then the game is reset
+            Destroy(this.gameObject);
         }
         
     }
