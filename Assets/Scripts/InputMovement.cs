@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class InputMovement : MonoBehaviour
 {
+    [Range(0,2)]
+    public int inputMode;
     //Lerping Movement Speed
     public float speed;
     public float slowedSpeed;
@@ -10,17 +12,18 @@ public class InputMovement : MonoBehaviour
     public float percent;
     public float changeSpeedInterval;
     private float startTimer = 0;
-    private float dropTimer = 0;
+
 
     public float initialSpeed;
     public float targetSpeed;
-
+    public float velLimit = 2.6f;
     public AnimationCurve animationCurve;
 
     //Movement Checks
     public float horizontalInput;
     [Range (1, 10)]
     public float jumpForce;
+    public float hookForce;
     public float dropElapsed;
     public bool isCrossing;
     public bool isGrounded;
@@ -44,6 +47,41 @@ public class InputMovement : MonoBehaviour
 
     bool isFacingRight = true;
     private bool dropping;
+    private LineRenderer rope;
+
+    string[] keyboardInput = new string[8];
+    string[] p1Intput = new string[8];
+    string[] p2Input = new string[8];
+
+    void SetInputs()
+    {
+        keyboardInput[0] = "";
+        keyboardInput[1] = "";
+        keyboardInput[2] = "";
+        keyboardInput[3] = "";
+        keyboardInput[4] = "";
+        keyboardInput[5] = "";
+        keyboardInput[6] = "";
+        keyboardInput[7] = "";
+
+        p1Intput[0] = "";
+        p1Intput[1] = "";
+        p1Intput[2] = "";
+        p1Intput[3] = "";
+        p1Intput[4] = "";
+        p1Intput[5] = "";
+        p1Intput[6] = "";
+        p1Intput[7] = "";
+
+        p2Input[0] = "";
+        p2Input[1] = "";
+        p2Input[2] = "";
+        p2Input[3] = "";
+        p2Input[4] = "";
+        p2Input[5] = "";
+        p2Input[6] = "";
+        p2Input[7] = "";
+    }
 
     void Awake()
     {
@@ -58,6 +96,8 @@ public class InputMovement : MonoBehaviour
 
     void Start()
     {
+        rope = GetComponent<LineRenderer>();
+        rope.enabled = false;
         // reset the current speed and initial speed, in case they've been changed in the Inspector
         initialSpeed = 0;
         speed = 0;
@@ -69,16 +109,23 @@ public class InputMovement : MonoBehaviour
     {
         Debug.DrawLine(lineCastStart.position, lineCastEnd.position, Color.green);
         Debug.DrawLine(lineCastUpStart.position, lineCastUpEnd.position, Color.blue);
-
-        
+        playerLayer = LayerMask.GetMask("Player");
+        groundLayer = LayerMask.GetMask("Ground");
+        if(Mathf.Abs(rb.velocity.x)< velLimit)
+        {
+            rb.velocity = new Vector2(0,rb.velocity.y);
+        }
 
         // Check if grounded
-        isGrounded = (Physics2D.Linecast(lineCastStart.position, lineCastEnd.position, groundLayer)) ? true : false;
+        if (!dropping)
+        {
+            isGrounded = (Physics2D.Linecast(lineCastStart.position, lineCastEnd.position, groundLayer)) ? true : false;
+        }
         isCrossing = (Physics2D.Linecast(lineCastUpStart.position, lineCastUpEnd.position, groundLayer)) ? true : false;
         isAiming = Input.GetKey(KeyCode.J);
+        rope.enabled = isAiming;
         if (isGrounded)
         {
-
             doubleJumped = !isGrounded;
             isJumping = !isGrounded;
         }
@@ -114,7 +161,7 @@ public class InputMovement : MonoBehaviour
         if (!isAiming)
         {
             // DropDown Interaction
-            if (Input.GetKeyDown(KeyCode.S))
+            if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.M))
             {
                 if (!dropping)
                 {
@@ -127,7 +174,9 @@ public class InputMovement : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.N))
                 {
                     isJumping = true;
-                    rb.AddRelativeForce(Vector2.up * jumpVelocity + new Vector2( Input.GetAxisRaw("Horizontal")*0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                    //rb.AddRelativeForce(Vector2.up * jumpVelocity + new Vector2( Input.GetAxisRaw("Horizontal")*0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                    rb.velocity = (Vector2.up * jumpVelocity + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime);
+
                 }
             }
 
@@ -136,8 +185,9 @@ public class InputMovement : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.N))
                 {
                     doubleJumped = true;
-                    rb.AddRelativeForce(Vector2.up * jumpVelocity*0.9f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
-                    
+                   // rb.AddRelativeForce(Vector2.up * jumpVelocity*0.9f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                    rb.velocity = (Vector2.up * jumpVelocity + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime);
+
                 }
 
             }
@@ -154,6 +204,8 @@ public class InputMovement : MonoBehaviour
             {
                 if (HitDirectionCheck(box.TargetsInRange[0]) >= 0.4f)
                 {
+                    rope.SetPosition(0, transform.position);
+                    rope.SetPosition(1, box.TargetsInRange[0].transform.position);
                     print("Hitting " + box.TargetsInRange[0].name);
                     //TaggedLayers.Add(9); //Player Layer
                     //TaggedLayers.Add(10); //Collectible Layer
@@ -173,7 +225,7 @@ public class InputMovement : MonoBehaviour
                         box.TargetsInRange[0].gameObject.layer == 10)
                     {
                         Vector2 dirToSelf = gameObject.transform.position - box.TargetsInRange[0].position;
-                        box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized * jumpVelocity * 3f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                        box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized * jumpVelocity * hookForce + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
                     }
                 }
             }
