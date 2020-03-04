@@ -14,16 +14,13 @@ public class LevelGenerator : MonoBehaviour {
     [Serializable]
     public class ObjectPool {
         public string tag;
-        public GameObject prefab;
+        public GameObject[] prefabs;
         public List<GameObject> objects;
 
         public int Populate (string _tag) {
             this.tag = _tag;
             this.objects = new List<GameObject> ();
             GameObject[] _temp = GameObject.FindGameObjectsWithTag (this.tag);
-            if (_temp.Length > 0) {
-                this.prefab = _temp[0];
-            }
             for (int i = 0; i < _temp.Length; i++) {
                 this.objects.Add (_temp[i]);
             }
@@ -31,13 +28,17 @@ public class LevelGenerator : MonoBehaviour {
         }
 
         public GameObject Pull (Transform _position) {
-            GameObject _temp;
+            GameObject _temp=null;
             if (this.objects.Count > 0) {
                 _temp = this.objects[0];
                 _temp.SetActive (true);
                 this.objects.Remove (_temp);
             } else {
-                _temp = Instantiate (prefab, _position);
+                if (prefabs.Length>0)
+                {
+                                    GameObject _tempPrefab = prefabs[UnityEngine.Random.Range(0,prefabs.Length)];
+                _temp = Instantiate (_tempPrefab, _position);
+                }
             }
             return _temp;
         }
