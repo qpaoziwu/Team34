@@ -47,6 +47,7 @@ public class InputMovement : MonoBehaviour
 
     bool isFacingRight = true;
     private bool dropping;
+    private LineRenderer rope;
 
     string[] keyboardInput = new string[8];
     string[] p1Intput = new string[8];
@@ -81,6 +82,7 @@ public class InputMovement : MonoBehaviour
         p2Input[6] = "";
         p2Input[7] = "";
     }
+
     void Awake()
     {
         // Get references to components
@@ -94,6 +96,8 @@ public class InputMovement : MonoBehaviour
 
     void Start()
     {
+        rope = GetComponent<LineRenderer>();
+        rope.enabled = false;
         // reset the current speed and initial speed, in case they've been changed in the Inspector
         initialSpeed = 0;
         speed = 0;
@@ -119,9 +123,9 @@ public class InputMovement : MonoBehaviour
         }
         isCrossing = (Physics2D.Linecast(lineCastUpStart.position, lineCastUpEnd.position, groundLayer)) ? true : false;
         isAiming = Input.GetKey(KeyCode.J);
+        rope.enabled = isAiming;
         if (isGrounded)
         {
-
             doubleJumped = !isGrounded;
             isJumping = !isGrounded;
         }
@@ -200,6 +204,8 @@ public class InputMovement : MonoBehaviour
             {
                 if (HitDirectionCheck(box.TargetsInRange[0]) >= 0.4f)
                 {
+                    rope.SetPosition(0, transform.position);
+                    rope.SetPosition(1, box.TargetsInRange[0].transform.position);
                     print("Hitting " + box.TargetsInRange[0].name);
                     //TaggedLayers.Add(9); //Player Layer
                     //TaggedLayers.Add(10); //Collectible Layer
