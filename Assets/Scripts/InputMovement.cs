@@ -46,6 +46,8 @@ public class InputMovement : MonoBehaviour
     SpriteRenderer spriteRendererComponent;
     public Rigidbody2D rb;
 
+    AudioSource audioSource;
+
 
     bool isFacingRight = true;
     private bool dropping;
@@ -54,42 +56,50 @@ public class InputMovement : MonoBehaviour
     public float ropeCancelDistance;
     public float pullSpeed;
 
-    string[] keyboardInput = new string[8];
-    string[] p1Intput = new string[8];
-    string[] p2Input = new string[8];
+    KeyCode[] keyboardInput = new KeyCode[8];
+    KeyCode[] p1Input = new KeyCode[8];
+    KeyCode[] p2Input = new KeyCode[8];
 
     private ObjectPooler pool;
 
     private bool isRoping;
 
+    //Audio clips
+    public AudioClip jump;
+    public AudioClip grappleConnect;
+    public AudioClip grappleThrow;
+    public AudioClip grappleError;
+    public AudioClip gemGet;
+
     void SetInputs()
     {
-        keyboardInput[0] = "";
-        keyboardInput[1] = "";
-        keyboardInput[2] = "";
-        keyboardInput[3] = "";
-        keyboardInput[4] = "";
-        keyboardInput[5] = "";
-        keyboardInput[6] = "";
-        keyboardInput[7] = "";
+        //aim,shoot,jump,drop
+        keyboardInput[0] = KeyCode.J;
+        keyboardInput[1] = KeyCode.K;
+        keyboardInput[2] = KeyCode.N;
+        keyboardInput[3] = KeyCode.M;
+        keyboardInput[4] = KeyCode.W;
+        keyboardInput[5] = KeyCode.S;
+        keyboardInput[6] = KeyCode.A;
+        keyboardInput[7] = KeyCode.D;
 
-        p1Intput[0] = "";
-        p1Intput[1] = "";
-        p1Intput[2] = "";
-        p1Intput[3] = "";
-        p1Intput[4] = "";
-        p1Intput[5] = "";
-        p1Intput[6] = "";
-        p1Intput[7] = "";
+        p1Input[0] = KeyCode.LeftControl;
+        p1Input[1] = KeyCode.LeftAlt;
+        p1Input[2] = KeyCode.LeftShift;
+        p1Input[3] = KeyCode.Z;
+        p1Input[4] = KeyCode.UpArrow;
+        p1Input[5] = KeyCode.DownArrow;
+        p1Input[6] = KeyCode.LeftArrow;
+        p1Input[7] = KeyCode.RightArrow;
 
-        p2Input[0] = "";
-        p2Input[1] = "";
-        p2Input[2] = "";
-        p2Input[3] = "";
-        p2Input[4] = "";
-        p2Input[5] = "";
-        p2Input[6] = "";
-        p2Input[7] = "";
+        p2Input[0] = KeyCode.A;
+        p2Input[1] = KeyCode.S;
+        p2Input[2] = KeyCode.W;
+        p2Input[3] = KeyCode.E;
+        p2Input[4] = KeyCode.R;
+        p2Input[5] = KeyCode.F;
+        p2Input[6] = KeyCode.D;
+        p2Input[7] = KeyCode.G;
     }
 
     void Awake()
@@ -97,10 +107,12 @@ public class InputMovement : MonoBehaviour
         // Get references to components
         animatorComponent = GetComponent<Animator>();
         spriteRendererComponent = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody2D>();
         playerLayer = LayerMask.GetMask("Player");
         groundLayer = LayerMask.GetMask("Ground");
         isFacingRight = true;
+        SetInputs();
     }
 
     void Start()
@@ -131,7 +143,7 @@ public class InputMovement : MonoBehaviour
         if(dropping)
         isCrossing = (Physics2D.Linecast(lineCastUpStart.position, lineCastUpEnd.position, groundLayer)) ? true : false;
 
-        isAiming = Input.GetKey(KeyCode.J);
+
         if (isGrounded)
         {
             doubleJumped = !isGrounded;
@@ -140,7 +152,7 @@ public class InputMovement : MonoBehaviour
 
         ColliderCheck();
 
-        InputHandler();
+        InputHandler(InputSelect());
         // Sprite Animation Parameters
         AnimateSprite();
     }
@@ -151,21 +163,38 @@ public class InputMovement : MonoBehaviour
         transform.position = Vector2.MoveTowards(transform.position, transform.position + Vector3.right * horizontalInput, LerpSpeed() * Time.deltaTime);
 
     }
+    KeyCode[] InputSelect()
+    {
+        if (inputMode == 0)
+        {
+            return keyboardInput;
+        }
+        if (inputMode == 1)
+        {
+            return p1Input;
+        }
+        if (inputMode == 2)
+        {
+            return p2Input;
+        }
+        return keyboardInput;
+    }
 
-    void InputHandler()
+
+    void InputHandler(KeyCode[] k)
     {
         horizontalInput = Input.GetAxis("Horizontal");
-
+        isAiming = Input.GetKey(k[0]);
         if (isAiming)
         {
             speed = Mathf.Clamp(horizontalInput, slowedSpeed, slowedSpeed);
-            if (Input.GetKeyDown(KeyCode.LeftAlt))
+            if (Input.GetKeyDown(k[1]))
             {
                 print("Hookshot!");
                 Hookshot();
             }
 
-            if (Input.GetKeyUp(KeyCode.K))
+            if (Input.GetKeyUp(k[1]))
             {
                 isRoping = false;
             }
@@ -174,7 +203,7 @@ public class InputMovement : MonoBehaviour
         if (!isAiming)
         {
             // DropDown Interaction
-            if (Input.GetKey(KeyCode.DownArrow) && Input.GetKey(KeyCode.Z))
+            if (Input.GetKey(k[5]) && Input.GetKey(k[3]))
             {
                 if (!dropping)
                 {
@@ -184,9 +213,10 @@ public class InputMovement : MonoBehaviour
 
             if (isGrounded && !isJumping)
             {
-                if (Input.GetKeyDown(KeyCode.LeftShift))
+                if (Input.GetKeyDown(k[2]))
                 {
                     //Sound Jump
+                    audioSource.PlayOneShot(jump, 1.0f);
 
                     isJumping = true;
                     //rb.AddRelativeForce(Vector2.up * jumpVelocity + new Vector2( Input.GetAxisRaw("Horizontal")*0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
@@ -196,9 +226,10 @@ public class InputMovement : MonoBehaviour
 
             if (!isGrounded && !doubleJumped)
             {
-                if (Input.GetKeyDown(KeyCode.LeftShift))
+                if (Input.GetKeyDown(k[2]))
                 {
                     //Sound Jump
+                    audioSource.PlayOneShot(jump, 1.0f);
 
                     doubleJumped = true;
                     // rb.AddRelativeForce(Vector2.up * jumpVelocity*0.9f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
@@ -261,6 +292,8 @@ public class InputMovement : MonoBehaviour
     private IEnumerator RopeItUp(Transform _target, bool _pull){
         rope.enabled = true;
         //Sound Grapple_Connect
+        audioSource.PlayOneShot(grappleConnect, 1.0f);
+
         isRoping = true;
         bool _iscollectible = _target.CompareTag("COL");
         if (_iscollectible)
@@ -276,6 +309,7 @@ public class InputMovement : MonoBehaviour
                 {
                     collectedItems++;
                     //Sound item_collect
+                    audioSource.PlayOneShot(gemGet, 1.0f);
 
                     pool.Drown(_target.gameObject);
                     //collect gem
