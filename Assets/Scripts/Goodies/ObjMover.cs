@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjMover : MonoBehaviour
@@ -19,7 +18,7 @@ public class ObjMover : MonoBehaviour
     IEnumerator routine;
     IEnumerator chargeRoutine;
 
-    float waitTime = 0;
+    //float waitTime = 0;
 
     public void StartShotCooldown()
     {

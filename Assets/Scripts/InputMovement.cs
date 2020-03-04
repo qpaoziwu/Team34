@@ -79,7 +79,6 @@ public class InputMovement : MonoBehaviour
         isAiming = Input.GetKey(KeyCode.J);
         if (isGrounded)
         {
-
             doubleJumped = !isGrounded;
             isJumping = !isGrounded;
         }
