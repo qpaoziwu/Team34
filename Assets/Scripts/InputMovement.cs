@@ -70,8 +70,9 @@ public class InputMovement : MonoBehaviour
     {
         Debug.DrawLine(lineCastStart.position, lineCastEnd.position, Color.green);
         Debug.DrawLine(lineCastUpStart.position, lineCastUpEnd.position, Color.blue);
+        playerLayer = LayerMask.GetMask("Player");
+        groundLayer = LayerMask.GetMask("Ground");
 
-        
 
         // Check if grounded
         isGrounded = (Physics2D.Linecast(lineCastStart.position, lineCastEnd.position, groundLayer)) ? true : false;
