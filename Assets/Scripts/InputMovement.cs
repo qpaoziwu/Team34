@@ -3,12 +3,9 @@ using UnityEngine;
 
 public class InputMovement : MonoBehaviour
 {
-<<<<<<< HEAD
-    [Range(0, 2)]
-=======
+
     public int collectedItems;
     [Range(0,2)]
->>>>>>> 5ac026a668c9eaef8a773ce6f34eb6771a40c489
     public int inputMode;
     //Lerping Movement Speed
     public float speed;
@@ -52,13 +49,10 @@ public class InputMovement : MonoBehaviour
 
     bool isFacingRight = true;
     private bool dropping;
-<<<<<<< HEAD
 
-=======
     private LineRenderer rope;
     public float ropeCancelDistance;
     public float pullSpeed;
->>>>>>> 5ac026a668c9eaef8a773ce6f34eb6771a40c489
 
     string[] keyboardInput = new string[8];
     string[] p1Intput = new string[8];
@@ -111,12 +105,9 @@ public class InputMovement : MonoBehaviour
 
     void Start()
     {
-<<<<<<< HEAD
-
-=======
         pool = GameObject.FindGameObjectWithTag("ObjectPooler").GetComponent<ObjectPooler>();
         rope = GetComponent<LineRenderer>();
->>>>>>> 5ac026a668c9eaef8a773ce6f34eb6771a40c489
+
         // reset the current speed and initial speed, in case they've been changed in the Inspector
         initialSpeed = 0;
         speed = 0;
@@ -139,12 +130,8 @@ public class InputMovement : MonoBehaviour
         isGrounded = (Physics2D.Linecast(lineCastStart.position, lineCastEnd.position, groundLayer)) ? true : false;
         if(dropping)
         isCrossing = (Physics2D.Linecast(lineCastUpStart.position, lineCastUpEnd.position, groundLayer)) ? true : false;
-<<<<<<< HEAD
-        isAiming = Input.GetKey(KeyCode.LeftControl);
 
-=======
         isAiming = Input.GetKey(KeyCode.J);
->>>>>>> 5ac026a668c9eaef8a773ce6f34eb6771a40c489
         if (isGrounded)
         {
             doubleJumped = !isGrounded;
@@ -233,10 +220,7 @@ public class InputMovement : MonoBehaviour
             {
                 if (HitDirectionCheck(box.TargetsInRange[0]) >= 0.4f)
                 {
-<<<<<<< HEAD
 
-=======
->>>>>>> 5ac026a668c9eaef8a773ce6f34eb6771a40c489
                     print("Hitting " + box.TargetsInRange[0].name);
                     //TaggedLayers.Add(9); //Player Layer
                     //TaggedLayers.Add(10); //Collectible Layer
@@ -247,12 +231,10 @@ public class InputMovement : MonoBehaviour
                     if (box.TargetsInRange[0].gameObject.layer == 12)
                     {
                         Vector2 dirToTarget = box.TargetsInRange[0].position - gameObject.transform.position;
-<<<<<<< HEAD
-                        rb.AddRelativeForce(dirToTarget.normalized * jumpVelocity * 1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
-=======
+
                         StartCoroutine(RopeItUp(box.TargetsInRange[0].transform,false));
                         rb.AddRelativeForce(dirToTarget.normalized * jumpVelocity*1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
->>>>>>> 5ac026a668c9eaef8a773ce6f34eb6771a40c489
+
                     }
 
                     //2) pull player to self
