@@ -5,6 +5,8 @@ public class LevelController : MonoBehaviour
 {
     [Header("Level Stats")]
     public int height;
+    public float prevPlatformX;
+    public float heightOfPreviousPlatform;
 
     [Header("Level Settings")]
     public float scrollSpeed;
@@ -23,8 +25,7 @@ public class LevelController : MonoBehaviour
     public float collectibleYOffset;
 
 
-    private float prevPlatformX = 0f;
-    private float heightOfPreviousPlatform;
+
     private void Start()
     {
         StartCoroutine(Timer());
@@ -46,11 +47,6 @@ public class LevelController : MonoBehaviour
             height++;
             yield return new WaitForSeconds(1f / scrollSpeed);
         }
-    }
-
-    private void OnDisable()
-    {
-        StopAllCoroutines();
     }
 
     public void CreatePlatform(GameObject _platform)
@@ -79,6 +75,14 @@ public class LevelController : MonoBehaviour
         if (Random.Range(0,100)<=collectibleProbability)
         {
             pool.Pull(2).transform.position = new Vector2(_tempPosition.x, _tempPosition.y+collectibleYOffset);
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            scrollSpeed = .3f;
+            GetComponent<BoxCollider2D>().enabled = false;
         }
     }
 }
