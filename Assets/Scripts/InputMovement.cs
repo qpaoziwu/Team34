@@ -185,8 +185,11 @@ public class InputMovement : MonoBehaviour
     {
         if(c.gameObject.layer == 10)
         {
+            audioSource.PlayOneShot(gemGet, 1.0f);
+
             c.gameObject.SetActive(false);
             collectedItems += 1;
+
         }
     }
     void InputHandler(KeyCode[] k)

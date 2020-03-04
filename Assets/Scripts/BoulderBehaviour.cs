@@ -7,7 +7,7 @@ public class BoulderBehaviour : MonoBehaviour
 
     private void Update()
     {
-        if(transform.position.y > -10)
+        if(transform.position.y < -10)
         {
             Destroy(this.gameObject);
         }
@@ -18,7 +18,7 @@ public class BoulderBehaviour : MonoBehaviour
         if(collision.gameObject.tag == "Player")
         {
             print("Player is hit");
-            //Player dies from a head Ingery
+            collision.gameObject.GetComponent<PlayerBehaviour>().isLosingLife = true;
         }
     }
 }

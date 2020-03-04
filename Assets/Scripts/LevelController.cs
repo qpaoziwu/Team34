@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class LevelController : MonoBehaviour
 {
@@ -25,11 +26,12 @@ public class LevelController : MonoBehaviour
     public float collectibleYOffset;
 
 
-
+    private GameObject[] player;
     private void Start()
     {
         StartCoroutine(Timer());
         pool = GameObject.FindGameObjectWithTag("ObjectPooler").GetComponent<ObjectPooler>();
+        player = GameObject.FindGameObjectsWithTag("Player");
     }
 
     private void Update()
@@ -83,6 +85,14 @@ public class LevelController : MonoBehaviour
         {
             scrollSpeed = .3f;
             GetComponent<BoxCollider2D>().enabled = false;
+        }
+    }
+
+    private void retart()
+    {
+        if(player.Length <= 0)
+        {
+            
         }
     }
 }
