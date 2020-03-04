@@ -140,12 +140,13 @@ public class InputMovement : MonoBehaviour
 
         // Check if grounded
         isGrounded = (Physics2D.Linecast(lineCastStart.position, lineCastEnd.position, groundLayer)) ? true : false;
-        if(dropping)
+        //if(dropping)
         isCrossing = (Physics2D.Linecast(lineCastUpStart.position, lineCastUpEnd.position, groundLayer)) ? true : false;
 
 
         if (isGrounded)
         {
+            gameObject.GetComponent<Collider2D>().enabled = true;
             doubleJumped = !isGrounded;
             isJumping = !isGrounded;
         }
@@ -180,7 +181,14 @@ public class InputMovement : MonoBehaviour
         return keyboardInput;
     }
 
-
+    private void OnCollisionEnter2D(Collision2D c)
+    {
+        if(c.gameObject.layer == 10)
+        {
+            c.gameObject.SetActive(false);
+            collectedItems += 1;
+        }
+    }
     void InputHandler(KeyCode[] k)
     {
         horizontalInput = Input.GetAxis("Horizontal");
