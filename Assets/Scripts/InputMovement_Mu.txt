@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class InputMovement : MonoBehaviour
 {
-    [Range(0, 2)]
+    [Range(0,2)]
     public int inputMode;
     //Lerping Movement Speed
     public float speed;
@@ -21,7 +21,7 @@ public class InputMovement : MonoBehaviour
 
     //Movement Checks
     public float horizontalInput;
-    [Range(1, 10)]
+    [Range (1, 10)]
     public float jumpForce;
     public float hookForce;
     public float dropElapsed;
@@ -47,7 +47,7 @@ public class InputMovement : MonoBehaviour
 
     bool isFacingRight = true;
     private bool dropping;
-
+    private LineRenderer rope;
 
     string[] keyboardInput = new string[8];
     string[] p1Intput = new string[8];
@@ -96,7 +96,8 @@ public class InputMovement : MonoBehaviour
 
     void Start()
     {
-
+        rope = GetComponent<LineRenderer>();
+        rope.enabled = false;
         // reset the current speed and initial speed, in case they've been changed in the Inspector
         initialSpeed = 0;
         speed = 0;
@@ -110,9 +111,9 @@ public class InputMovement : MonoBehaviour
         Debug.DrawLine(lineCastUpStart.position, lineCastUpEnd.position, Color.blue);
         playerLayer = LayerMask.GetMask("Player");
         groundLayer = LayerMask.GetMask("Ground");
-        if (Mathf.Abs(rb.velocity.x) < velLimit)
+        if(Mathf.Abs(rb.velocity.x)< velLimit)
         {
-            rb.velocity = new Vector2(0, rb.velocity.y);
+            rb.velocity = new Vector2(0,rb.velocity.y);
         }
 
         // Check if grounded
@@ -121,8 +122,8 @@ public class InputMovement : MonoBehaviour
             isGrounded = (Physics2D.Linecast(lineCastStart.position, lineCastEnd.position, groundLayer)) ? true : false;
         }
         isCrossing = (Physics2D.Linecast(lineCastUpStart.position, lineCastUpEnd.position, groundLayer)) ? true : false;
-        isAiming = Input.GetKey(KeyCode.LeftControl);
-
+        isAiming = Input.GetKey(KeyCode.J);
+        rope.enabled = isAiming;
         if (isGrounded)
         {
             doubleJumped = !isGrounded;
@@ -150,7 +151,7 @@ public class InputMovement : MonoBehaviour
         if (isAiming)
         {
             speed = Mathf.Clamp(horizontalInput, slowedSpeed, slowedSpeed);
-            if (Input.GetKeyDown(KeyCode.LeftAlt))
+            if (Input.GetKeyDown(KeyCode.K))
             {
                 print("Hookshot!");
                 Hookshot();
@@ -160,7 +161,7 @@ public class InputMovement : MonoBehaviour
         if (!isAiming)
         {
             // DropDown Interaction
-            if (Input.GetKey(KeyCode.DownArrow) && Input.GetKey(KeyCode.Z))
+            if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.M))
             {
                 if (!dropping)
                 {
@@ -170,7 +171,7 @@ public class InputMovement : MonoBehaviour
 
             if (isGrounded && !isJumping)
             {
-                if (Input.GetKeyDown(KeyCode.LeftShift))
+                if (Input.GetKeyDown(KeyCode.N))
                 {
                     isJumping = true;
                     //rb.AddRelativeForce(Vector2.up * jumpVelocity + new Vector2( Input.GetAxisRaw("Horizontal")*0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
@@ -181,29 +182,30 @@ public class InputMovement : MonoBehaviour
 
             if (!isGrounded && !doubleJumped)
             {
-                if (Input.GetKeyDown(KeyCode.LeftShift))
+                if (Input.GetKeyDown(KeyCode.N))
                 {
                     doubleJumped = true;
-                    // rb.AddRelativeForce(Vector2.up * jumpVelocity*0.9f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                   // rb.AddRelativeForce(Vector2.up * jumpVelocity*0.9f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
                     rb.velocity = (Vector2.up * jumpVelocity + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime);
 
                 }
 
             }
-
+            
         }
 
     }
 
     void Hookshot()
     {
-        if (box.TargetsInRange.Count > 0)
+        if (box.TargetsInRange.Count >0)
         {
             if (box.ClosestTarget(gameObject.transform) != gameObject.transform)
             {
                 if (HitDirectionCheck(box.TargetsInRange[0]) >= 0.4f)
                 {
-
+                    rope.SetPosition(0, transform.position);
+                    rope.SetPosition(1, box.TargetsInRange[0].transform.position);
                     print("Hitting " + box.TargetsInRange[0].name);
                     //TaggedLayers.Add(9); //Player Layer
                     //TaggedLayers.Add(10); //Collectible Layer
@@ -214,7 +216,7 @@ public class InputMovement : MonoBehaviour
                     if (box.TargetsInRange[0].gameObject.layer == 12)
                     {
                         Vector2 dirToTarget = box.TargetsInRange[0].position - gameObject.transform.position;
-                        rb.AddRelativeForce(dirToTarget.normalized * jumpVelocity * 1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                        rb.AddRelativeForce(dirToTarget.normalized * jumpVelocity*1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
                     }
 
                     //2) pull player to self
@@ -241,7 +243,7 @@ public class InputMovement : MonoBehaviour
 
         Vector3 dirToTarget = t.position - gameObject.transform.position;
 
-        float angleToAimpoint = Vector2.Dot(dirToTarget.normalized, new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")));
+        float angleToAimpoint= Vector2.Dot(dirToTarget.normalized, new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")));
 
         return angleToAimpoint;
 
@@ -268,7 +270,7 @@ public class InputMovement : MonoBehaviour
         {
             gameObject.GetComponent<Collider2D>().enabled = false;
         }
-        if (isGrounded && checkingGround)
+        if (isGrounded&& checkingGround)
         {
             gameObject.GetComponent<Collider2D>().enabled = true;
 
@@ -296,7 +298,7 @@ public class InputMovement : MonoBehaviour
             {
                 startTimer = 10f;
             }
-            if (Input.GetButtonUp("Horizontal") && speed != 0f && !isJumping)
+            if (Input.GetButtonUp("Horizontal") && speed != 0f&& !isJumping)
             {
                 return speed = 0.1f;
             }
