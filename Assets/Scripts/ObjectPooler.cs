@@ -23,7 +23,6 @@ public class ObjectPooler : MonoBehaviour
     public class ObjectPool
     {
         public string tag;
-        public GameObject[] prefabs;
         public List<GameObject> objects;
 
         public int Populate(string _tag)

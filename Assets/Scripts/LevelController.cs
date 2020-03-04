@@ -18,6 +18,9 @@ public class LevelController : MonoBehaviour
     public float maxXDistance;
     public float heightDiffBetweenPlatforms;
     public float doublePlatformThreshold;
+    [Range(0, 100)]
+    public int collectibleProbability;
+    public float collectibleYOffset;
 
 
     private float prevPlatformX = 0f;
@@ -62,10 +65,20 @@ public class LevelController : MonoBehaviour
         prevPlatformX = _tempPosition.x;
         pool.Pull(0).transform.position = _tempPosition;
 
-        if (prevPlatformX < -doublePlatformThreshold || prevPlatformX > doublePlatformThreshold)
+        if (prevPlatformX < -doublePlatformThreshold)
         {
             _tempPosition = new Vector2(Mathf.Clamp((prevPlatformX + Random.Range(minXDistance, maxXDistance)), minXPosition, -minXPosition), screenYLimit + (Random.Range((-heightDiffBetweenPlatforms * .5f), (heightDiffBetweenPlatforms * .5f))));
             pool.Pull(0).transform.position = _tempPosition;
+        }
+        else if (prevPlatformX > doublePlatformThreshold)
+        {
+            _tempPosition = new Vector2(Mathf.Clamp((prevPlatformX - Random.Range(minXDistance, maxXDistance)), minXPosition, -minXPosition), screenYLimit + (Random.Range((-heightDiffBetweenPlatforms * .5f), (heightDiffBetweenPlatforms * .5f))));
+            pool.Pull(0).transform.position = _tempPosition;
+        }
+
+        if (Random.Range(0,100)<=collectibleProbability)
+        {
+            pool.Pull(2).transform.position = new Vector2(_tempPosition.x, _tempPosition.y+collectibleYOffset);
         }
     }
 }
