@@ -41,5 +41,7 @@ public class exlimationMark_Behaviour : MonoBehaviour
         isShaking = false;
         transform.position = startPos;
         transform.localScale = startScale;
+        yield return new WaitForSeconds(0.2f);
+        Destroy(this.gameObject);
     }
 }
