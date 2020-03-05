@@ -17,7 +17,7 @@ public class exlimationMark_Behaviour : MonoBehaviour
     {
         startPos = transform.position;
         startScale = transform.localScale;
-        StartCoroutine(vibraiteText());
+        StartCoroutine(flickerText());
 
         //Start Courintine where it shake
     }
@@ -25,23 +25,41 @@ public class exlimationMark_Behaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isShaking == true)
-        {
+        /*
             increase += 0.1f;
             float scale = 0.4f * Mathf.Cos(0.7f * increase + 3.15f) + 1.4f;
             transform.localScale = new Vector3(scale,scale);
             transform.position = new Vector3(0.1f * Mathf.Cos(4f * increase) + startPos.x, transform.position.y);
-        }
+            */
     }
 
-    private IEnumerator vibraiteText()
+    private IEnumerator flickerText()
     {
         isShaking = true;
-        yield return new WaitForSeconds(1.7f);
-        isShaking = false;
-        transform.position = startPos;
-        transform.localScale = startScale;
-        yield return new WaitForSeconds(0.2f);
+        this.GetComponent<SpriteRenderer>().enabled = false;
+        yield return new WaitForSeconds(0.15f);
+        this.GetComponent<SpriteRenderer>().enabled = true;
+        yield return new WaitForSeconds(0.15f);
+
+        this.GetComponent<SpriteRenderer>().enabled = false;
+        yield return new WaitForSeconds(0.15f);
+        this.GetComponent<SpriteRenderer>().enabled = true;
+        yield return new WaitForSeconds(0.15f);
+
+        this.GetComponent<SpriteRenderer>().enabled = false;
+        yield return new WaitForSeconds(0.15f);
+        this.GetComponent<SpriteRenderer>().enabled = true;
+        yield return new WaitForSeconds(0.15f);
+
+        this.GetComponent<SpriteRenderer>().enabled = false;
+        yield return new WaitForSeconds(0.15f);
+        this.GetComponent<SpriteRenderer>().enabled = true;
+        yield return new WaitForSeconds(0.15f);
+
+        this.GetComponent<SpriteRenderer>().enabled = false;
+        yield return new WaitForSeconds(0.15f);
+        this.GetComponent<SpriteRenderer>().enabled = true;
+        yield return new WaitForSeconds(0.15f);
         Destroy(this.gameObject);
     }
 }
