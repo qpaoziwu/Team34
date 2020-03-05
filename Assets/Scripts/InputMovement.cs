@@ -239,6 +239,12 @@ public class InputMovement : MonoBehaviour
             {
                 if (Input.GetKeyDown(k[2]))
                 {
+                    float jumpPitch;
+
+                    jumpPitch = Random.Range(0.8f, 1.2f);
+
+                    audioSource.pitch = jumpPitch;
+
                     //Sound Jump
                     audioSource.PlayOneShot(jump, 1.0f);
 
