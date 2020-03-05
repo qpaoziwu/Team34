@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 public class InputMovement : MonoBehaviour
@@ -66,6 +66,8 @@ public class InputMovement : MonoBehaviour
     KeyCode[] p1Input = new KeyCode[8];
     KeyCode[] p2Input = new KeyCode[8];
 
+    string[] Axis = new string[6];
+
     private ObjectPooler pool;
 
     private bool isRoping;
@@ -105,6 +107,14 @@ public class InputMovement : MonoBehaviour
         p2Input[5] = KeyCode.F;
         p2Input[6] = KeyCode.D;
         p2Input[7] = KeyCode.G;
+
+        Axis[0] = "Horizontal";
+        Axis[1] = "Vertical";
+        Axis[2] = "p1_h";
+        Axis[3] = "p1_v";
+        Axis[4] = "p2_h";
+        Axis[5] = "p2_v";
+
     }
     void Awake()
     {
@@ -155,17 +165,17 @@ public class InputMovement : MonoBehaviour
 
         ColliderCheck();
 
-        InputHandler(InputSelect());
+        InputHandler(InputSelect(), H_Axis(), V_Axis());
         // Sprite Animation Parameters
         AnimateSprite();
     }
     void FixedUpdate()
     {
         // move toward the target position using the interpolated speed
-        transform.position = Vector2.MoveTowards(transform.position, transform.position + Vector3.right * horizontalInput, LerpSpeed() * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, transform.position + Vector3.right * horizontalInput, LerpSpeed(H_Axis()) * Time.deltaTime);
 
     }
-    KeyCode[] InputSelect()
+    public KeyCode[] InputSelect()
     {
         if (inputMode == 0)
         {
@@ -181,6 +191,41 @@ public class InputMovement : MonoBehaviour
         }
         return keyboardInput;
     }
+<<<<<<< HEAD
+=======
+    public string H_Axis()
+    {
+        if (inputMode == 0)
+        {
+            return Axis[0];
+        }
+        if (inputMode == 1)
+        {
+            return Axis[2];
+        }
+        if (inputMode == 2)
+        {
+            return Axis[4];
+        }
+        return Axis[0];
+    }
+    public string V_Axis()
+    {
+        if (inputMode == 0)
+        {
+            return Axis[1];
+        }
+        if (inputMode == 1)
+        {
+            return Axis[3];
+        }
+        if (inputMode == 2)
+        {
+            return Axis[5];
+        }
+        return Axis[0];
+    }
+>>>>>>> master
     private void OnCollisionEnter2D(Collision2D c)
     {
         if(c.gameObject.layer == 10)
@@ -201,23 +246,37 @@ public class InputMovement : MonoBehaviour
             //collect gem
         }
     }
-    void InputHandler(KeyCode[] k)
+    void InputHandler(KeyCode[] k, string h, string v)
     {
-        horizontalInput = Input.GetAxis("Horizontal");
+        horizontalInput = Input.GetAxis(h);
         isAiming = Input.GetKey(k[0]);
         if (isAiming)
         {
+<<<<<<< HEAD
             speed = Mathf.Clamp(horizontalInput, 0, slowedSpeed);
+=======
+            if (box.ClosestTarget(gameObject.transform) != gameObject.transform)
+            {
+                Crosshair.SetActive(true);
+                Crosshair.transform.position = box.ClosestTarget(gameObject.transform).position;
+            }
+
+            speed = Mathf.Clamp(horizontalInput, slowedSpeed, slowedSpeed);
+>>>>>>> master
             if (Input.GetKeyDown(k[1]))
             {
                 print("Hookshot!");
-                Hookshot();
+                Hookshot(H_Axis());
             }
 
             if (Input.GetKeyUp(k[1]))
             {
                 isRoping = false;
             }
+        }
+        else
+        {
+            Crosshair.SetActive(false);
         }
 
         if (!isAiming)
@@ -240,7 +299,7 @@ public class InputMovement : MonoBehaviour
 
                     isJumping = true;
                     //rb.AddRelativeForce(Vector2.up * jumpVelocity + new Vector2( Input.GetAxisRaw("Horizontal")*0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
-                    rb.velocity = (Vector2.up * jumpVelocity + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime);
+                    rb.velocity = (Vector2.up * jumpVelocity + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime);
                 }
             }
 
@@ -259,7 +318,7 @@ public class InputMovement : MonoBehaviour
 
                     doubleJumped = true;
                     // rb.AddRelativeForce(Vector2.up * jumpVelocity*0.9f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
-                    rb.velocity = (Vector2.up * jumpVelocity + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime);
+                    rb.velocity = (Vector2.up * jumpVelocity + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime);
 
                 }
 
@@ -268,14 +327,24 @@ public class InputMovement : MonoBehaviour
         }
 
     }
+<<<<<<< HEAD
     void Hookshot()
+=======
+
+    void Hookshot(string h)
+>>>>>>> master
     {
         if (box.TargetsInRange.Count > 0)
         {
             if (box.ClosestTarget(gameObject.transform) != gameObject.transform)
             {
-                if (HitDirectionCheck(box.TargetsInRange[0]) >= 0.4f)
+                
+                if (HitDirectionCheck(box.TargetsInRange[0], H_Axis(), V_Axis()) >= 0.4f)
                 {
+<<<<<<< HEAD
+=======
+                    
+>>>>>>> master
                     print("Hitting " + box.TargetsInRange[0].name);
                     //TaggedLayers.Add(9); //Player Layer
                     //TaggedLayers.Add(10); //Collectible Layer
@@ -286,7 +355,12 @@ public class InputMovement : MonoBehaviour
                     {
                         Vector2 dirToTarget = box.TargetsInRange[0].position - gameObject.transform.position;
                         StartCoroutine(RopeItUp(box.TargetsInRange[0].transform,false));
+<<<<<<< HEAD
                         rb.velocity = (dirToTarget.normalized * selfPullPower * 1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime);
+=======
+                        rb.velocity = (dirToTarget.normalized * jumpVelocity * 1.5f + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime);
+
+>>>>>>> master
                         //rb.AddRelativeForce(dirToTarget.normalized * jumpVelocity*1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
                     }
                     //2) pull player to self
@@ -296,9 +370,17 @@ public class InputMovement : MonoBehaviour
                     {
                         Vector2 dirToSelf = gameObject.transform.position - box.TargetsInRange[0].position;
                         StartCoroutine(RopeItUp(box.TargetsInRange[0].transform, true));
+<<<<<<< HEAD
                         box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized *  collectiblePullPower + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+=======
+                        box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized * jumpVelocity * hookForce + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+>>>>>>> master
                     }
                 }
+            }
+            else {
+                Crosshair.SetActive(false);
+
             }
         }
         else
@@ -337,13 +419,18 @@ public class InputMovement : MonoBehaviour
         }
         rope.enabled = false;
     }
+<<<<<<< HEAD
     public float HitDirectionCheck(Transform t)
+=======
+    
+    public float HitDirectionCheck(Transform t, string h, string v)
+>>>>>>> master
     {
         //float angleToTarget = Vector2.Dot(box.TargetsByRange[0].position.normalized, gameObject.transform.position.normalized);
 
         Vector3 dirToTarget = t.position - gameObject.transform.position;
 
-        float angleToAimpoint = Vector2.Dot(dirToTarget.normalized, new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")));
+        float angleToAimpoint = Vector2.Dot(dirToTarget.normalized, new Vector3(Input.GetAxis(h), Input.GetAxis(v)));
 
         return angleToAimpoint;
 
@@ -372,11 +459,16 @@ public class InputMovement : MonoBehaviour
             gameObject.GetComponent<Collider2D>().enabled = true;
         }
     }
+<<<<<<< HEAD
     float LerpSpeed()
+=======
+
+    float LerpSpeed(string h)
+>>>>>>> master
     {
         if (!isAiming)
         {
-            if (Input.GetButton("Horizontal"))
+            if (Input.GetButton(h))
             {
                 // the time elapsed since the timer was started
                 float timeElapsed = Time.time - startTimer;
@@ -389,11 +481,11 @@ public class InputMovement : MonoBehaviour
                 // calculate the current speed, using percent and the animation curve
                 return speed = Mathf.Lerp(initialSpeed, targetSpeed, animationCurve.Evaluate(_percent));
             }
-            if (Input.GetButton("Horizontal") && !isGrounded)
+            if (Input.GetButton(h) && !isGrounded)
             {
                 startTimer = 10f;
             }
-            if (Input.GetButtonUp("Horizontal") && speed != 0f && !isJumping)
+            if (Input.GetButtonUp(h) && speed != 0f && !isJumping)
             {
                 return speed = 0.1f;
             }
