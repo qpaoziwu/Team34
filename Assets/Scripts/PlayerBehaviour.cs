@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerBehaviour : MonoBehaviour
 {
     public bool isLosingLife;
-    private int lifes;
+    public int lifes;
     public Vector3 startingPosition;
     private bool hitOnceWithoutGems;
     // Start is called before the first frame update
