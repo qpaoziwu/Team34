@@ -9,7 +9,7 @@ public class uiTextManager : MonoBehaviour
     public Text playerTwoScore;
     public Text score;
     public GameObject playerOne;
-    private GameObject playerTwo;
+    public GameObject playerTwo;
     // Start is called before the first frame update
     void Start()
     {
