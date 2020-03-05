@@ -102,7 +102,7 @@ public class BoxTarget2D : MonoBehaviour
             {
                 TargetsInRange.Remove(TargetsInRange[i]);
             }
-        } TargetsInRange.Sort((y, x) => { return (Player.HitDirectionCheck(x).CompareTo(Player.HitDirectionCheck(y)));}); 
+        } TargetsInRange.Sort((y, x) => { return (Player.HitDirectionCheck(x, Player.H_Axis(), Player.V_Axis()).CompareTo(Player.HitDirectionCheck(y, Player.H_Axis(), Player.V_Axis())));}); 
     }
         
 

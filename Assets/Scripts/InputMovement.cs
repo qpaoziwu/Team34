@@ -175,7 +175,7 @@ public class InputMovement : MonoBehaviour
         transform.position = Vector2.MoveTowards(transform.position, transform.position + Vector3.right * horizontalInput, LerpSpeed(H_Axis()) * Time.deltaTime);
 
     }
-    KeyCode[] InputSelect()
+    public KeyCode[] InputSelect()
     {
         if (inputMode == 0)
         {
@@ -191,7 +191,7 @@ public class InputMovement : MonoBehaviour
         }
         return keyboardInput;
     }
-    string H_Axis()
+    public string H_Axis()
     {
         if (inputMode == 0)
         {
@@ -207,7 +207,7 @@ public class InputMovement : MonoBehaviour
         }
         return Axis[0];
     }
-    string V_Axis()
+    public string V_Axis()
     {
         if (inputMode == 0)
         {
