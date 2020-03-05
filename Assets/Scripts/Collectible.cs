@@ -6,6 +6,7 @@ public class Collectible : MonoBehaviour
 {
     private LevelController controller;
     private ObjectPooler pool;
+    public Vector3 startingPosition;
 
     private void Start()
     {
@@ -28,5 +29,12 @@ public class Collectible : MonoBehaviour
         {
             pool.Drown(gameObject);
         }
+    }
+
+    private void shootOut(int power)
+    {
+        this.GetComponent<Rigidbody2D>().velocity
+                = (Vector2.up * power * 2 * Time.deltaTime);
+
     }
 }

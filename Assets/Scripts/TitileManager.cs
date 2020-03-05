@@ -17,6 +17,12 @@ public class TitileManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        collectables = GameObject.FindGameObjectsWithTag("COL");
+        for(int i = 0; i < collectables.Length; i++)
+        {
+            collectables[i].GetComponent<Collectible>().startingPosition = collectables[i].transform.position;
+        }
         readyToGo = false;
 
     }
@@ -42,6 +48,17 @@ public class TitileManager : MonoBehaviour
         }
     }
 
+    private void resetCollectables()
+    {
+        for(int i = 0; i < collectables.Length; i++)
+        {
+            if(collectables[i].transform.position.y < -5.2f)
+            {
+                collectables[i].transform.position = collectables[i].GetComponent<Collectible>().startingPosition;
+            }
+        }
+    }
+
     public void restartPlayer()
     {
         GameObject playerOne = GameObject.FindGameObjectWithTag("Player");
@@ -58,6 +75,7 @@ public class TitileManager : MonoBehaviour
     {
 
         collectables = GameObject.FindGameObjectsWithTag("COL");
+        resetCollectables();
         print(collectables.Length);
         if(collectables.Length <= 0)
         {
