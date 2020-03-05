@@ -22,6 +22,6 @@ public class uiTextManager : MonoBehaviour
     {
         playerOneScore.text = "x  " +  playerOne.GetComponent<InputMovement>().collectedItems;
 
-        playerOneLives.text = "Player  one  lives:  " + playerOne.GetComponent<PlayerBehaviour>().lives;
+        //playerOneLives.text = "Player  one  lives:  " + playerOne.GetComponent<PlayerBehaviour>().lives;
     }
 }

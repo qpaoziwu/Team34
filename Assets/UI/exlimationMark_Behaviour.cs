@@ -13,8 +13,14 @@ public class exlimationMark_Behaviour : MonoBehaviour
     private float increase;
     private bool isShaking;
 
+    AudioSource audioSource;
+
+    public AudioClip alertSFX;
+
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+
         startPos = transform.position;
         startScale = transform.localScale;
         StartCoroutine(flickerText());
@@ -39,26 +45,31 @@ public class exlimationMark_Behaviour : MonoBehaviour
         this.GetComponent<SpriteRenderer>().enabled = false;
         yield return new WaitForSeconds(0.15f);
         this.GetComponent<SpriteRenderer>().enabled = true;
+        audioSource.PlayOneShot(alertSFX, 0.7f);
         yield return new WaitForSeconds(0.15f);
 
         this.GetComponent<SpriteRenderer>().enabled = false;
         yield return new WaitForSeconds(0.15f);
         this.GetComponent<SpriteRenderer>().enabled = true;
+        audioSource.PlayOneShot(alertSFX, 0.7f);
         yield return new WaitForSeconds(0.15f);
 
         this.GetComponent<SpriteRenderer>().enabled = false;
         yield return new WaitForSeconds(0.15f);
         this.GetComponent<SpriteRenderer>().enabled = true;
+        audioSource.PlayOneShot(alertSFX, 0.7f);
         yield return new WaitForSeconds(0.15f);
 
         this.GetComponent<SpriteRenderer>().enabled = false;
         yield return new WaitForSeconds(0.15f);
         this.GetComponent<SpriteRenderer>().enabled = true;
+        audioSource.PlayOneShot(alertSFX, 0.7f);
         yield return new WaitForSeconds(0.15f);
 
         this.GetComponent<SpriteRenderer>().enabled = false;
         yield return new WaitForSeconds(0.15f);
         this.GetComponent<SpriteRenderer>().enabled = true;
+        audioSource.PlayOneShot(alertSFX, 0.7f);
         yield return new WaitForSeconds(0.15f);
         Destroy(this.gameObject);
     }

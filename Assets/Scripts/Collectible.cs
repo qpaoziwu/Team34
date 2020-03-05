@@ -12,6 +12,10 @@ public class Collectible : MonoBehaviour
     {
         controller = GameObject.FindGameObjectWithTag("LevelScroller").GetComponent<LevelController>();
         pool = GameObject.FindGameObjectWithTag("ObjectPooler").GetComponent<ObjectPooler>();
+        if (GetComponent<BoxCollider2D>().isTrigger == true)
+        {
+            GetComponent<BoxCollider2D>().isTrigger = false;
+        }
     }
 
     private void Update()
