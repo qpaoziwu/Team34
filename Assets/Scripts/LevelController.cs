@@ -35,6 +35,7 @@ public class LevelController : MonoBehaviour
 
     private void Update()
     {
+        print(height);
         retart();
         if (height - heightOfPreviousPlatform > heightDiffBetweenPlatforms)
         {
