@@ -6,9 +6,11 @@ public class PlayerBehaviour : MonoBehaviour
 {
     public int lives;
     public bool isLosingLife;
+    public Vector3 startingPosition;
     // Start is called before the first frame update
     void Start()
     {
+        startingPosition = transform.position;
         lives = 3;
         isLosingLife = false;
     }
