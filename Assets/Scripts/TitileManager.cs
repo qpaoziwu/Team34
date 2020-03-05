@@ -7,18 +7,24 @@ using UnityEngine.SceneManagement;
 public class TitileManager : MonoBehaviour
 {
     private bool readyToGo;
-
-    public Text playerOneText;
-    public Text playerTwoText;
+    
     private GameObject[] collectables;
 
     public GameObject playerOne;
-    //public GameObject playerTwo;
+    public GameObject playerTwo;
+
+    private bool spawnedPlayerOne;
+    private bool spawnedPlayerTwo;
+
+    GameObject[] players;
     // Start is called before the first frame update
     void Start()
     {
+        spawnedPlayerOne = false;
+        spawnedPlayerTwo = false;
 
         collectables = GameObject.FindGameObjectsWithTag("COL");
+        players = GameObject.FindGameObjectsWithTag("Player");
         for(int i = 0; i < collectables.Length; i++)
         {
             collectables[i].GetComponent<Collectible>().startingPosition = collectables[i].transform.position;
@@ -32,19 +38,23 @@ public class TitileManager : MonoBehaviour
     {
         startGame();
         restartPlayer();
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) && spawnedPlayerOne == false)
         {
-            StartCoroutine(flickeringText(playerOneText));
-            Instantiate(playerOne, new Vector3(-2, -3,0), Quaternion.identity);
+            Instantiate(playerOne, new Vector3(-2, -3,0), playerOne.transform.rotation);
             playerOne.GetComponent<Rigidbody2D>().velocity
                 = (Vector2.up * playerOne.gameObject.GetComponent<InputMovement>().jumpVelocity * 2 + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime);
             playerOne.gameObject.GetComponent<PlayerBehaviour>().isLosingLife = true;
+            spawnedPlayerOne = true;
         }
 
 
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Input.GetKeyDown(KeyCode.Alpha2) && spawnedPlayerTwo == false)
         {
-            StartCoroutine(flickeringText(playerTwoText));
+            Instantiate(playerTwo, new Vector3(2, -3, 0), playerTwo.transform.rotation);
+            playerTwo.GetComponent<Rigidbody2D>().velocity
+                = (Vector2.up * playerTwo.gameObject.GetComponent<InputMovement>().jumpVelocity * 2 + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime);
+            playerTwo.gameObject.GetComponent<PlayerBehaviour>().isLosingLife = true;
+            spawnedPlayerTwo = true;
         }
     }
 
@@ -61,12 +71,17 @@ public class TitileManager : MonoBehaviour
 
     public void restartPlayer()
     {
-        GameObject playerOne = GameObject.FindGameObjectWithTag("Player");
-        if (playerOne != null)
+
+        players = GameObject.FindGameObjectsWithTag("Player");
+
+        if (players.Length > 0)
         {
-            if (playerOne.transform.position.y < -5.2f)
+            for (int i = 0; i < players.Length; i++)
             {
-                playerOne.transform.position = new Vector3(-2, -3, 0);
+                if(players[i].transform.position.y < -5.2)
+                {
+                    players[i].transform.position = players[i].GetComponent<PlayerBehaviour>().startingPosition;
+                }
             }
         }
     }
@@ -76,38 +91,9 @@ public class TitileManager : MonoBehaviour
 
         collectables = GameObject.FindGameObjectsWithTag("COL");
         resetCollectables();
-        print(collectables.Length);
         if(collectables.Length <= 0)
         {
             SceneManager.LoadScene(1, LoadSceneMode.Single);
         }
-    }
-
-
-    public IEnumerator flickeringText(Text text)
-    {
-        text.color = Color.red;
-        yield return new WaitForSeconds(0.15f);
-        text.color = Color.white;
-        yield return new WaitForSeconds(0.15f);
-        text.color = Color.red;
-        yield return new WaitForSeconds(0.15f);
-        text.color = Color.white;
-        yield return new WaitForSeconds(0.15f);
-        text.color = Color.red;
-        yield return new WaitForSeconds(0.15f);
-        text.color = Color.white;
-        yield return new WaitForSeconds(0.15f);
-        text.color = Color.red;
-        yield return new WaitForSeconds(0.15f);
-        text.color = Color.white;
-        yield return new WaitForSeconds(0.15f);
-        text.color = Color.red;
-        yield return new WaitForSeconds(0.15f);
-        text.color = Color.white;
-        yield return new WaitForSeconds(0.15f);
-        text.color = Color.red;
-        yield return new WaitForSeconds(0.15f);
-        text.color = Color.white;
     }
 }

@@ -7,8 +7,6 @@ public class uiTextManager : MonoBehaviour
 {
     public Text playerOneScore;
     public Text playerTwoScore;
-    public Text playerOneLives;
-    public Text playerTwoLives;
     public Text score;
     public GameObject playerOne;
     private GameObject playerTwo;
