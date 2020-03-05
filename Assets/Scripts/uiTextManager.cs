@@ -20,8 +20,15 @@ public class uiTextManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        playerOneScore.text = "x  " +  playerOne.GetComponent<InputMovement>().collectedItems;
+        if (playerOne!=null)
+        {
+            playerOneScore.text = "x  " + playerOne.GetComponent<InputMovement>().collectedItems;
+        }
 
+        if (playerTwo != null)
+        {
+            playerTwoScore.text = "x  " + playerTwo.GetComponent<InputMovement>().collectedItems;
+        }
         //playerOneLives.text = "Player  one  lives:  " + playerOne.GetComponent<PlayerBehaviour>().lives;
     }
 }

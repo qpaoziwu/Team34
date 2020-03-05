@@ -72,7 +72,7 @@ public class BoxTarget2D : MonoBehaviour
                         if (other.gameObject != this)
                         {
                             TargetsInRange.Add(other.gameObject.transform);
-                            print(other.gameObject + " in range");
+                            //print(other.gameObject + " in range");
                             
                         }
                     }

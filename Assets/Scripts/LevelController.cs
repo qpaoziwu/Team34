@@ -35,8 +35,8 @@ public class LevelController : MonoBehaviour
 
     private void Update()
     {
-        print(height);
-        retart();
+        //print(height);
+        Restart();
         if (height - heightOfPreviousPlatform > heightDiffBetweenPlatforms)
         {
             CreatePlatform(pool.Pull(0));
@@ -89,7 +89,7 @@ public class LevelController : MonoBehaviour
         }
     }
 
-    private void retart()
+    private void Restart()
     {
 
         player = GameObject.FindGameObjectsWithTag("Player");

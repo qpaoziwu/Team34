@@ -5,7 +5,7 @@ public class InputMovement : MonoBehaviour
 {
 
     public int collectedItems;
-    [Range(0,2)]
+    [Range(0, 2)]
     public int inputMode;
     //Lerping Movement Speed
     public float speed;
@@ -69,8 +69,6 @@ public class InputMovement : MonoBehaviour
     string[] Axis = new string[6];
 
     private ObjectPooler pool;
-
-    private bool isRoping;
 
     //Audio clips
     public AudioClip jump;
@@ -141,8 +139,8 @@ public class InputMovement : MonoBehaviour
     }
     void Update()
     {
-        Debug.DrawLine(lineCastStart.position, lineCastEnd.position, Color.green);
-        Debug.DrawLine(lineCastUpStart.position, lineCastUpEnd.position, Color.blue);
+        //Debug.DrawLine(lineCastStart.position, lineCastEnd.position, Color.green);
+        //Debug.DrawLine(lineCastUpStart.position, lineCastUpEnd.position, Color.blue);
         playerLayer = LayerMask.GetMask("Player");
         groundLayer = LayerMask.GetMask("Ground");
         if (Mathf.Abs(rb.velocity.x) < velLimit)
@@ -227,7 +225,7 @@ public class InputMovement : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D c)
     {
-        if(c.gameObject.layer == 10)
+        if (c.gameObject.layer == 10)
         {
             audioSource.PlayOneShot(gemGet, 1.0f);
 
@@ -263,13 +261,8 @@ public class InputMovement : MonoBehaviour
 
             if (Input.GetKeyDown(k[1]))
             {
-                print("Hookshot!");
+                //print("Hookshot!");
                 Hookshot(H_Axis());
-            }
-
-            if (Input.GetKeyUp(k[1]))
-            {
-                isRoping = false;
             }
         }
         else
@@ -325,27 +318,27 @@ public class InputMovement : MonoBehaviour
         }
 
     }
-void Hookshot(string h)
-{
+    void Hookshot(string h)
+    {
         if (box.TargetsInRange.Count > 0)
         {
             if (box.ClosestTarget(gameObject.transform) != gameObject.transform)
             {
-                
+
                 if (HitDirectionCheck(box.TargetsInRange[0], H_Axis(), V_Axis()) >= 0.4f)
                 {
-print("Hitting " + box.TargetsInRange[0].name);
+                    ////print("Hitting " + box.TargetsInRange[0].name);
                     //TaggedLayers.Add(9); //Player Layer
                     //TaggedLayers.Add(10); //Collectible Layer
                     //TaggedLayers.Add(11); //Enemy Layer
                     //TaggedLayers.Add(12); //Terrian Layer
                     //1) shoot self at Terrian
-                    if (box.TargetsInRange[0].gameObject.layer == 12)
+
                     {
                         Vector2 dirToTarget = box.TargetsInRange[0].position - gameObject.transform.position;
-                        StartCoroutine(RopeItUp(box.TargetsInRange[0].transform,false));
-                        rb.velocity = (dirToTarget.normalized * selfPullPower * 1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime);
-                        //rb.AddRelativeForce(dirToTarget.normalized * jumpVelocity*1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                        StartCoroutine(RopeItUp(box.TargetsInRange[0].transform, false));
+                        rb.velocity = (dirToTarget.normalized * selfPullPower * 1.5f + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime);
+                        //rb.AddRelativeForce(dirToTarget.normalized * selfPullPower + new Vector2(Input.GetAxisRaw(h), 0f) * Time.deltaTime, ForceMode2D.Impulse);
                     }
                     //2) pull player to self
                     //3) pull collectiable to self
@@ -354,30 +347,33 @@ print("Hitting " + box.TargetsInRange[0].name);
                     {
                         Vector2 dirToSelf = gameObject.transform.position - box.TargetsInRange[0].position;
                         StartCoroutine(RopeItUp(box.TargetsInRange[0].transform, true));
-                        box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized *  collectiblePullPower + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                        box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized * collectiblePullPower + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
                     }
                 }
             }
-            else {
+            else
+            {
                 Crosshair.SetActive(false);
-
             }
         }
         else
         {
-            print("No target in range!");
+            //print("No target in range!");
             //Sound Grapple_error
             //shoot at axis(h,v);
         }
     }
-    private IEnumerator RopeItUp(Transform _target, bool _pull){
+    private IEnumerator RopeItUp(Transform _target, bool _pull)
+    {
         rope.enabled = true;
         //Sound Grapple_Connect
         audioSource.PlayOneShot(grappleConnect, 1.0f);
-        isRoping = true;
-        while (isRoping){
+        bool isRoping = true;
+
+        while (isRoping)
+        {
             float _distance = Vector2.Distance(transform.position, _target.position);
-            if (_distance<minDistance||_distance>maxDistance)
+            if (_distance < minDistance || _distance > maxDistance || !_target.gameObject.activeInHierarchy)
             {
                 isRoping = false;
                 if (_target.CompareTag("COL"))
@@ -393,14 +389,18 @@ print("Hitting " + box.TargetsInRange[0].name);
                 {
                     _target.gameObject.GetComponent<BoxCollider2D>().isTrigger = true;
                 }
-                _target.position = Vector2.MoveTowards(_target.position, transform.position, pullSpeed * Time.deltaTime);
+                _target.position = Vector2.MoveTowards(transform.position, _target.position, pullSpeed * Time.deltaTime);
+            }
+            else
+            {
+
             }
             yield return new WaitForEndOfFrame();
         }
         rope.enabled = false;
     }
-public float HitDirectionCheck(Transform t, string h, string v)
-{
+    public float HitDirectionCheck(Transform t, string h, string v)
+    {
         //float angleToTarget = Vector2.Dot(box.TargetsByRange[0].position.normalized, gameObject.transform.position.normalized);
 
         Vector3 dirToTarget = t.position - gameObject.transform.position;
@@ -434,8 +434,8 @@ public float HitDirectionCheck(Transform t, string h, string v)
             gameObject.GetComponent<Collider2D>().enabled = true;
         }
     }
-float LerpSpeed(string h)
-{
+    float LerpSpeed(string h)
+    {
         if (!isAiming)
         {
             if (Input.GetButton(h))

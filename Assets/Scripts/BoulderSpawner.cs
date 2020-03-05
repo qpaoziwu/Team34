@@ -29,7 +29,7 @@ public class BoulderSpawner : MonoBehaviour
     {
         if(spawnBoulder == true)
         {
-            print(Screen.width);
+            //print(Screen.width);
             float xPos = Random.Range(-3, 5);
             Instantiate(boulder, new Vector3(xPos, 10, 0), Quaternion.identity);
             Instantiate(exclimationMarkIcon, new Vector3(xPos, 4, 0), Quaternion.identity);
