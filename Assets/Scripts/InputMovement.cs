@@ -52,6 +52,7 @@ public class InputMovement : MonoBehaviour
     bool isFacingRight = true;
     private bool dropping;
 
+    public GameObject Crosshair;
     private LineRenderer rope;
     public float ropeCancelDistance;
     public float pullSpeed;
@@ -198,6 +199,12 @@ public class InputMovement : MonoBehaviour
         isAiming = Input.GetKey(k[0]);
         if (isAiming)
         {
+            if (box.ClosestTarget(gameObject.transform) != gameObject.transform)
+            {
+                Crosshair.SetActive(true);
+                Crosshair.transform.position = box.ClosestTarget(gameObject.transform).position;
+            }
+
             speed = Mathf.Clamp(horizontalInput, slowedSpeed, slowedSpeed);
             if (Input.GetKeyDown(k[1]))
             {
@@ -209,6 +216,10 @@ public class InputMovement : MonoBehaviour
             {
                 isRoping = false;
             }
+        }
+        else
+        {
+            Crosshair.SetActive(false);
         }
 
         if (!isAiming)
@@ -266,9 +277,10 @@ public class InputMovement : MonoBehaviour
         {
             if (box.ClosestTarget(gameObject.transform) != gameObject.transform)
             {
+                
                 if (HitDirectionCheck(box.TargetsInRange[0]) >= 0.4f)
                 {
-
+                    
                     print("Hitting " + box.TargetsInRange[0].name);
                     //TaggedLayers.Add(9); //Player Layer
                     //TaggedLayers.Add(10); //Collectible Layer
@@ -297,6 +309,10 @@ public class InputMovement : MonoBehaviour
                         box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized * jumpVelocity * hookForce + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
                     }
                 }
+            }
+            else {
+                Crosshair.SetActive(false);
+
             }
         }
         else
