@@ -59,7 +59,7 @@ public class InputMovement : MonoBehaviour
     public float minDistance;
     public float maxDistance;
     private LineRenderer rope;
-
+    public GameObject Crosshair;
     public float pullSpeed;
 
     KeyCode[] keyboardInput = new KeyCode[8];
@@ -191,8 +191,7 @@ public class InputMovement : MonoBehaviour
         }
         return keyboardInput;
     }
-<<<<<<< HEAD
-=======
+
     public string H_Axis()
     {
         if (inputMode == 0)
@@ -209,6 +208,7 @@ public class InputMovement : MonoBehaviour
         }
         return Axis[0];
     }
+
     public string V_Axis()
     {
         if (inputMode == 0)
@@ -225,7 +225,6 @@ public class InputMovement : MonoBehaviour
         }
         return Axis[0];
     }
->>>>>>> master
     private void OnCollisionEnter2D(Collision2D c)
     {
         if(c.gameObject.layer == 10)
@@ -252,9 +251,8 @@ public class InputMovement : MonoBehaviour
         isAiming = Input.GetKey(k[0]);
         if (isAiming)
         {
-<<<<<<< HEAD
             speed = Mathf.Clamp(horizontalInput, 0, slowedSpeed);
-=======
+
             if (box.ClosestTarget(gameObject.transform) != gameObject.transform)
             {
                 Crosshair.SetActive(true);
@@ -262,7 +260,7 @@ public class InputMovement : MonoBehaviour
             }
 
             speed = Mathf.Clamp(horizontalInput, slowedSpeed, slowedSpeed);
->>>>>>> master
+
             if (Input.GetKeyDown(k[1]))
             {
                 print("Hookshot!");
@@ -327,13 +325,8 @@ public class InputMovement : MonoBehaviour
         }
 
     }
-<<<<<<< HEAD
-    void Hookshot()
-=======
-
-    void Hookshot(string h)
->>>>>>> master
-    {
+void Hookshot(string h)
+{
         if (box.TargetsInRange.Count > 0)
         {
             if (box.ClosestTarget(gameObject.transform) != gameObject.transform)
@@ -341,11 +334,7 @@ public class InputMovement : MonoBehaviour
                 
                 if (HitDirectionCheck(box.TargetsInRange[0], H_Axis(), V_Axis()) >= 0.4f)
                 {
-<<<<<<< HEAD
-=======
-                    
->>>>>>> master
-                    print("Hitting " + box.TargetsInRange[0].name);
+print("Hitting " + box.TargetsInRange[0].name);
                     //TaggedLayers.Add(9); //Player Layer
                     //TaggedLayers.Add(10); //Collectible Layer
                     //TaggedLayers.Add(11); //Enemy Layer
@@ -355,12 +344,7 @@ public class InputMovement : MonoBehaviour
                     {
                         Vector2 dirToTarget = box.TargetsInRange[0].position - gameObject.transform.position;
                         StartCoroutine(RopeItUp(box.TargetsInRange[0].transform,false));
-<<<<<<< HEAD
                         rb.velocity = (dirToTarget.normalized * selfPullPower * 1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime);
-=======
-                        rb.velocity = (dirToTarget.normalized * jumpVelocity * 1.5f + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime);
-
->>>>>>> master
                         //rb.AddRelativeForce(dirToTarget.normalized * jumpVelocity*1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
                     }
                     //2) pull player to self
@@ -370,11 +354,7 @@ public class InputMovement : MonoBehaviour
                     {
                         Vector2 dirToSelf = gameObject.transform.position - box.TargetsInRange[0].position;
                         StartCoroutine(RopeItUp(box.TargetsInRange[0].transform, true));
-<<<<<<< HEAD
                         box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized *  collectiblePullPower + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
-=======
-                        box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized * jumpVelocity * hookForce + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
->>>>>>> master
                     }
                 }
             }
@@ -419,13 +399,8 @@ public class InputMovement : MonoBehaviour
         }
         rope.enabled = false;
     }
-<<<<<<< HEAD
-    public float HitDirectionCheck(Transform t)
-=======
-    
-    public float HitDirectionCheck(Transform t, string h, string v)
->>>>>>> master
-    {
+public float HitDirectionCheck(Transform t, string h, string v)
+{
         //float angleToTarget = Vector2.Dot(box.TargetsByRange[0].position.normalized, gameObject.transform.position.normalized);
 
         Vector3 dirToTarget = t.position - gameObject.transform.position;
@@ -459,13 +434,8 @@ public class InputMovement : MonoBehaviour
             gameObject.GetComponent<Collider2D>().enabled = true;
         }
     }
-<<<<<<< HEAD
-    float LerpSpeed()
-=======
-
-    float LerpSpeed(string h)
->>>>>>> master
-    {
+float LerpSpeed(string h)
+{
         if (!isAiming)
         {
             if (Input.GetButton(h))
