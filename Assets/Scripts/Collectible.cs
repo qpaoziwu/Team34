@@ -35,11 +35,4 @@ public class Collectible : MonoBehaviour
             pool.Drown(gameObject);
         }
     }
-
-    private void shootOut(int power)
-    {
-        this.GetComponent<Rigidbody2D>().velocity
-                = (Vector2.up * power * 2 * Time.deltaTime);
-
-    }
 }

@@ -13,6 +13,7 @@ public class lavaScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision) {
         if (collision.gameObject.tag == "Player") {
+
             audioSource.PlayOneShot(hurtSFX, 0.75f);
 
             collision.gameObject.GetComponent<Rigidbody2D>().velocity

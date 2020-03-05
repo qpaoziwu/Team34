@@ -10,10 +10,6 @@ public class uiTextManager : MonoBehaviour
     public Text score;
     public GameObject playerOne;
     private GameObject playerTwo;
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
 
     // Update is called once per frame
     void Update()
