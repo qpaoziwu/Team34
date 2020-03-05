@@ -3,9 +3,8 @@ using UnityEngine;
 
 public class InputMovement : MonoBehaviour
 {
-
     public int collectedItems;
-    [Range(0,2)]
+    [Range(0, 2)]
     public int inputMode;
     //Lerping Movement Speed
     public float speed;
@@ -14,13 +13,10 @@ public class InputMovement : MonoBehaviour
     public float percent;
     public float changeSpeedInterval;
     private float startTimer = 0;
-
-
     public float initialSpeed;
     public float targetSpeed;
     public float velLimit = 2.6f;
     public AnimationCurve animationCurve;
-
     //Movement Checks
     public float horizontalInput;
     [Range(1, 10)]
@@ -33,25 +29,19 @@ public class InputMovement : MonoBehaviour
     public bool isJumping;
     public bool doubleJumped;
     public bool checkingGround;
-
     public int playerLayer;
     public int groundLayer;
     public Transform lineCastStart;
     public Transform lineCastEnd;
     public Transform lineCastUpStart;
     public Transform lineCastUpEnd;
-
     public BoxTarget2D box;
     Animator animatorComponent;
     SpriteRenderer spriteRendererComponent;
     public Rigidbody2D rb;
-
     AudioSource audioSource;
-
-
     bool isFacingRight = true;
     private bool dropping;
-
     [Header("GrapplingPoint Settings")]
     public float selfPullPower;
     public float collectiblePullPower;
@@ -59,9 +49,7 @@ public class InputMovement : MonoBehaviour
     public float minDistance;
     public float maxDistance;
     private LineRenderer rope;
-    public GameObject Crosshair;
     public float pullSpeed;
-
     KeyCode[] keyboardInput = new KeyCode[8];
     KeyCode[] p1Input = new KeyCode[8];
     KeyCode[] p2Input = new KeyCode[8];
@@ -71,6 +59,8 @@ public class InputMovement : MonoBehaviour
     private ObjectPooler pool;
 
     private bool isRoping;
+    public GameObject Crosshair;
+
 
     //Audio clips
     public AudioClip jump;
@@ -78,6 +68,8 @@ public class InputMovement : MonoBehaviour
     public AudioClip grappleThrow;
     public AudioClip grappleError;
     public AudioClip gemGet;
+
+
     void SetInputs()
     {
         //aim,shoot,jump,drop
@@ -89,7 +81,6 @@ public class InputMovement : MonoBehaviour
         keyboardInput[5] = KeyCode.S;
         keyboardInput[6] = KeyCode.A;
         keyboardInput[7] = KeyCode.D;
-
         p1Input[0] = KeyCode.LeftControl;
         p1Input[1] = KeyCode.LeftAlt;
         p1Input[2] = KeyCode.LeftShift;
@@ -98,7 +89,6 @@ public class InputMovement : MonoBehaviour
         p1Input[5] = KeyCode.DownArrow;
         p1Input[6] = KeyCode.LeftArrow;
         p1Input[7] = KeyCode.RightArrow;
-
         p2Input[0] = KeyCode.A;
         p2Input[1] = KeyCode.S;
         p2Input[2] = KeyCode.W;
@@ -132,7 +122,6 @@ public class InputMovement : MonoBehaviour
     {
         pool = GameObject.FindGameObjectWithTag("ObjectPooler").GetComponent<ObjectPooler>();
         rope = GetComponent<LineRenderer>();
-
         // reset the current speed and initial speed, in case they've been changed in the Inspector
         initialSpeed = 0;
         speed = 0;
@@ -149,13 +138,10 @@ public class InputMovement : MonoBehaviour
         {
             rb.velocity = new Vector2(0, rb.velocity.y);
         }
-
         // Check if grounded
         isGrounded = (Physics2D.Linecast(lineCastStart.position, lineCastEnd.position, groundLayer)) ? true : false;
         //if(dropping)
         isCrossing = (Physics2D.Linecast(lineCastUpStart.position, lineCastUpEnd.position, groundLayer)) ? true : false;
-
-
         if (isGrounded)
         {
             gameObject.GetComponent<Collider2D>().enabled = true;
@@ -172,9 +158,11 @@ public class InputMovement : MonoBehaviour
     void FixedUpdate()
     {
         // move toward the target position using the interpolated speed
+
         transform.position = Vector2.MoveTowards(transform.position, transform.position + Vector3.right * horizontalInput, LerpSpeed(H_Axis()) * Time.deltaTime);
 
     }
+
     public KeyCode[] InputSelect()
     {
         if (inputMode == 0)
@@ -208,7 +196,6 @@ public class InputMovement : MonoBehaviour
         }
         return Axis[0];
     }
-
     public string V_Axis()
     {
         if (inputMode == 0)
@@ -225,38 +212,36 @@ public class InputMovement : MonoBehaviour
         }
         return Axis[0];
     }
+
     private void OnCollisionEnter2D(Collision2D c)
     {
-        if(c.gameObject.layer == 10)
+        if (c.gameObject.layer == 10)
         {
             audioSource.PlayOneShot(gemGet, 1.0f);
-
             c.gameObject.SetActive(false);
             collectedItems += 1;
-
-        }
-
-        if (c.transform.CompareTag("COL"))
-        {
-            collectedItems++;
-            //Sound item_collect
-            audioSource.PlayOneShot(gemGet, 1.0f);
-            pool.Drown(c.gameObject);
-            //collect gem
         }
     }
+
     void InputHandler(KeyCode[] k, string h, string v)
     {
+
         horizontalInput = Input.GetAxis(h);
         isAiming = Input.GetKey(k[0]);
         if (isAiming)
         {
-            speed = Mathf.Clamp(horizontalInput, 0, slowedSpeed);
 
             if (box.ClosestTarget(gameObject.transform) != gameObject.transform)
             {
                 Crosshair.SetActive(true);
-                Crosshair.transform.position = box.ClosestTarget(gameObject.transform).position;
+                if (HitDirectionCheck(box.TargetsInRange[0], H_Axis(), V_Axis()) >= 0.4f)
+                {
+                    Crosshair.transform.position = box.TargetsInRange[0].position;
+                }
+                else
+                {
+                    Crosshair.transform.position = gameObject.transform.position;
+                }
             }
 
             speed = Mathf.Clamp(horizontalInput, slowedSpeed, slowedSpeed);
@@ -264,6 +249,7 @@ public class InputMovement : MonoBehaviour
             if (Input.GetKeyDown(k[1]))
             {
                 print("Hookshot!");
+
                 Hookshot(H_Axis());
             }
 
@@ -287,7 +273,6 @@ public class InputMovement : MonoBehaviour
                     dropping = true;
                 }
             }
-
             if (isGrounded && !isJumping)
             {
                 if (Input.GetKeyDown(k[2]))
@@ -297,6 +282,7 @@ public class InputMovement : MonoBehaviour
 
                     isJumping = true;
                     //rb.AddRelativeForce(Vector2.up * jumpVelocity + new Vector2( Input.GetAxisRaw("Horizontal")*0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+
                     rb.velocity = (Vector2.up * jumpVelocity + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime);
                 }
             }
@@ -306,35 +292,34 @@ public class InputMovement : MonoBehaviour
                 if (Input.GetKeyDown(k[2]))
                 {
                     float jumpPitch;
-
                     jumpPitch = Random.Range(0.8f, 1.2f);
-
                     audioSource.pitch = jumpPitch;
-
                     //Sound Jump
                     audioSource.PlayOneShot(jump, 1.0f);
 
                     doubleJumped = true;
                     // rb.AddRelativeForce(Vector2.up * jumpVelocity*0.9f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+
                     rb.velocity = (Vector2.up * jumpVelocity + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime);
 
                 }
 
             }
-
         }
 
     }
-void Hookshot(string h)
-{
+
+    void Hookshot(string h)
+    {
         if (box.TargetsInRange.Count > 0)
         {
             if (box.ClosestTarget(gameObject.transform) != gameObject.transform)
             {
-                
+
                 if (HitDirectionCheck(box.TargetsInRange[0], H_Axis(), V_Axis()) >= 0.4f)
                 {
-print("Hitting " + box.TargetsInRange[0].name);
+                    Crosshair.transform.position = box.TargetsInRange[0].position;
+                    print("Hitting " + box.TargetsInRange[0].name);
                     //TaggedLayers.Add(9); //Player Layer
                     //TaggedLayers.Add(10); //Collectible Layer
                     //TaggedLayers.Add(11); //Enemy Layer
@@ -343,8 +328,9 @@ print("Hitting " + box.TargetsInRange[0].name);
                     if (box.TargetsInRange[0].gameObject.layer == 12)
                     {
                         Vector2 dirToTarget = box.TargetsInRange[0].position - gameObject.transform.position;
-                        StartCoroutine(RopeItUp(box.TargetsInRange[0].transform,false));
-                        rb.velocity = (dirToTarget.normalized * selfPullPower * 1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime);
+                        StartCoroutine(RopeItUp(box.TargetsInRange[0].transform, false));
+                        rb.velocity = (dirToTarget.normalized * jumpVelocity * 1.5f + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime);
+
                         //rb.AddRelativeForce(dirToTarget.normalized * jumpVelocity*1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
                     }
                     //2) pull player to self
@@ -354,11 +340,14 @@ print("Hitting " + box.TargetsInRange[0].name);
                     {
                         Vector2 dirToSelf = gameObject.transform.position - box.TargetsInRange[0].position;
                         StartCoroutine(RopeItUp(box.TargetsInRange[0].transform, true));
-                        box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized *  collectiblePullPower + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+
+                        box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized * jumpVelocity * hookForce + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+
                     }
                 }
             }
-            else {
+            else
+            {
                 Crosshair.SetActive(false);
 
             }
@@ -370,14 +359,16 @@ print("Hitting " + box.TargetsInRange[0].name);
             //shoot at axis(h,v);
         }
     }
-    private IEnumerator RopeItUp(Transform _target, bool _pull){
+    private IEnumerator RopeItUp(Transform _target, bool _pull)
+    {
         rope.enabled = true;
         //Sound Grapple_Connect
         audioSource.PlayOneShot(grappleConnect, 1.0f);
         isRoping = true;
-        while (isRoping){
+        while (isRoping)
+        {
             float _distance = Vector2.Distance(transform.position, _target.position);
-            if (_distance<minDistance||_distance>maxDistance)
+            if (_distance < minDistance || _distance > maxDistance)
             {
                 isRoping = false;
                 if (_target.CompareTag("COL"))
@@ -399,8 +390,10 @@ print("Hitting " + box.TargetsInRange[0].name);
         }
         rope.enabled = false;
     }
-public float HitDirectionCheck(Transform t, string h, string v)
-{
+
+    public float HitDirectionCheck(Transform t, string h, string v)
+
+    {
         //float angleToTarget = Vector2.Dot(box.TargetsByRange[0].position.normalized, gameObject.transform.position.normalized);
 
         Vector3 dirToTarget = t.position - gameObject.transform.position;
@@ -434,8 +427,10 @@ public float HitDirectionCheck(Transform t, string h, string v)
             gameObject.GetComponent<Collider2D>().enabled = true;
         }
     }
-float LerpSpeed(string h)
-{
+
+    float LerpSpeed(string h)
+
+    {
         if (!isAiming)
         {
             if (Input.GetButton(h))
@@ -451,15 +446,16 @@ float LerpSpeed(string h)
                 // calculate the current speed, using percent and the animation curve
                 return speed = Mathf.Lerp(initialSpeed, targetSpeed, animationCurve.Evaluate(_percent));
             }
+
             if (Input.GetButton(h) && !isGrounded)
             {
                 startTimer = 10f;
             }
+
             if (Input.GetButtonUp(h) && speed != 0f && !isJumping)
             {
                 return speed = 0.1f;
             }
-
         }
         if (!isGrounded)
         {
@@ -484,11 +480,9 @@ float LerpSpeed(string h)
             spriteRendererComponent.flipX = false;
             isFacingRight = true;
         }
-
         // Set Animator variables
         animatorComponent.SetFloat("horizontalSpeed", Mathf.Abs(horizontalInput));
         animatorComponent.SetBool("isGrounded", isGrounded);
         animatorComponent.SetBool("isAiming", isAiming);
-
     }
 }
