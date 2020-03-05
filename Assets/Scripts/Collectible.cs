@@ -8,6 +8,7 @@ public class Collectible : MonoBehaviour
     private ObjectPooler pool;
     public Vector3 startingPosition;
 
+
     private void Start()
     {
         controller = GameObject.FindGameObjectWithTag("LevelScroller").GetComponent<LevelController>();
