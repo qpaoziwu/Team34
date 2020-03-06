@@ -60,7 +60,8 @@ public class InputMovement : MonoBehaviour
 
     private bool isRoping;
     public GameObject Crosshair;
-
+    public GameObject doubleJumpFX;
+    public Transform RopePoint;
 
     //Audio clips
     public AudioClip jump;
@@ -69,7 +70,6 @@ public class InputMovement : MonoBehaviour
     public AudioClip grappleError;
     public AudioClip gemGet;
 
-    public GameObject doubleJumpFX;
 
     void SetInputs()
     {
@@ -123,6 +123,7 @@ public class InputMovement : MonoBehaviour
     {
         pool = GameObject.FindGameObjectWithTag("ObjectPooler").GetComponent<ObjectPooler>();
         rope = GetComponent<LineRenderer>();
+        rope.enabled = false;
         // reset the current speed and initial speed, in case they've been changed in the Inspector
         initialSpeed = 0;
         speed = 0;
@@ -153,6 +154,12 @@ public class InputMovement : MonoBehaviour
         ColliderCheck();
 
         InputHandler(InputSelect(), H_Axis(), V_Axis());
+        if (rope.enabled)
+        {
+            rope.SetPosition(0, transform.position);
+            rope.SetPosition(1, RopePoint.position);
+        }
+        
         // Sprite Animation Parameters
         AnimateSprite();
     }
@@ -253,7 +260,10 @@ public class InputMovement : MonoBehaviour
 
                 Hookshot(H_Axis());
             }
-
+            if (!Input.GetKey(k[1]) || transform.position.y > RopePoint.transform.position.y)
+            {
+                rope.enabled = false;
+            }
             if (Input.GetKeyUp(k[1]))
             {
                 isRoping = false;
@@ -266,6 +276,7 @@ public class InputMovement : MonoBehaviour
 
         if (!isAiming)
         {
+
             // DropDown Interaction
             if (Input.GetKey(k[5]) && Input.GetKey(k[3]))
             {
@@ -298,7 +309,6 @@ public class InputMovement : MonoBehaviour
                     //Sound Jump
                     audioSource.PlayOneShot(jump, 1.0f);
                     Instantiate(doubleJumpFX, transform.position, Quaternion.identity);
-
                     doubleJumped = true;
                     // rb.AddRelativeForce(Vector2.up * jumpVelocity*0.9f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
 
@@ -321,6 +331,8 @@ public class InputMovement : MonoBehaviour
                 if (HitDirectionCheck(box.TargetsInRange[0], H_Axis(), V_Axis()) >= 0.4f)
                 {
                     Crosshair.transform.position = box.TargetsInRange[0].position;
+                    RopePoint = box.TargetsInRange[0];
+
                     print("Hitting " + box.TargetsInRange[0].name);
                     //TaggedLayers.Add(9); //Player Layer
                     //TaggedLayers.Add(10); //Collectible Layer
@@ -336,9 +348,27 @@ public class InputMovement : MonoBehaviour
                         //rb.AddRelativeForce(dirToTarget.normalized * jumpVelocity*1.5f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
                     }
                     //2) pull player to self
+
+                    if (box.TargetsInRange[0].gameObject.layer == 9)
+                    {
+                        Vector2 dirToSelf = gameObject.transform.position - box.TargetsInRange[0].position;
+                        Vector2 dirToTarget = box.TargetsInRange[0].position - gameObject.transform.position;
+                        if (gameObject.transform.position.y < box.TargetsInRange[0].position.y)
+                        {
+                            box.TargetsInRange[0].GetComponent<Rigidbody2D>().AddRelativeForce(dirToSelf.normalized * jumpVelocity + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                            rb.velocity = (dirToTarget.normalized * jumpVelocity * 1.5f + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime);
+                        }
+                        else
+                        {
+                            rb.AddRelativeForce(dirToTarget.normalized * jumpVelocity + new Vector2(Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
+                            box.TargetsInRange[0].GetComponent<Rigidbody2D>().velocity = (dirToSelf.normalized * jumpVelocity * 1.5f + new Vector2(-Input.GetAxisRaw(h) * 0.5f, 0f) * Time.deltaTime);
+
+                        }
+
+                    }
+
                     //3) pull collectiable to self
-                    if (box.TargetsInRange[0].gameObject.layer == 9 ||
-                        box.TargetsInRange[0].gameObject.layer == 10)
+                    if (box.TargetsInRange[0].gameObject.layer == 10)
                     {
                         Vector2 dirToSelf = gameObject.transform.position - box.TargetsInRange[0].position;
                         StartCoroutine(RopeItUp(box.TargetsInRange[0].transform, true));
@@ -367,6 +397,7 @@ public class InputMovement : MonoBehaviour
         //Sound Grapple_Connect
         audioSource.PlayOneShot(grappleConnect, 1.0f);
         isRoping = true;
+
         while (isRoping)
         {
             float _distance = Vector2.Distance(transform.position, _target.position);
@@ -378,19 +409,17 @@ public class InputMovement : MonoBehaviour
                     _target.gameObject.GetComponent<BoxCollider2D>().isTrigger = false;
                 }
             }
-            rope.SetPosition(0, transform.position);
-            rope.SetPosition(1, _target.position);
+
             if (_pull)
             {
                 if (_target.CompareTag("COL"))
                 {
                     _target.gameObject.GetComponent<BoxCollider2D>().isTrigger = true;
                 }
-                _target.position = Vector2.MoveTowards(_target.position, transform.position, pullSpeed * Time.deltaTime);
+                // _target.position = Vector2.MoveTowards(_target.position, transform.position, pullSpeed * Time.deltaTime);
             }
             yield return new WaitForEndOfFrame();
         }
-        rope.enabled = false;
     }
 
     public float HitDirectionCheck(Transform t, string h, string v)
