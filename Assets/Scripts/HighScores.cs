@@ -73,7 +73,7 @@ public class HighScores : MonoBehaviour
                         DecreaseLetter(initialColumn);
                     }
 
-                    if (Input.GetKeyDown(KeyCode.J))
+                    if (Input.GetKeyDown(KeyCode.A))
                     {
                         InsertNewHighScore(newHighScoreIndex, playerInitials.text, score);
                     }

@@ -1,7 +1,0 @@
-Sources
-
-Animated Robot sprite sheet (opengartart.org)
-http://opengameart.org/content/animated-robot
-
-Platformer Art Pack (opengameart.org)
-http://opengameart.org/content/platformer-art-complete-pack-often-updated

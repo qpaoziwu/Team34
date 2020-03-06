@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class LevelController : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class LevelController : MonoBehaviour
     public float collectibleYOffset;
 
 
-    private GameObject[] player;
+    public List<GameObject> player;
     private void Start()
     {
         StartCoroutine(Timer());
@@ -100,12 +101,18 @@ public class LevelController : MonoBehaviour
 
     private void Restart()
     {
-
-        player = GameObject.FindGameObjectsWithTag("Player");
-        if (player.Length <= 0)
+        for (int i = player.Count - 1; i >= 0; i--)
+        {
+            if (player[i] == null)
+            {
+                player.Remove(player[i]);
+            }
+        }
+        //player = GameObject.FindGameObjectsWithTag("Player");
+        if (player.Count <= 0)
         {
             //Go to next scene
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
+           SceneManager.LoadScene(2, LoadSceneMode.Single);
         }
     }
 }

@@ -8,7 +8,7 @@ public class TitileManager : MonoBehaviour
 {
     private bool readyToGo;
     
-    private GameObject[] collectables;
+    public GameObject[] collectables;
 
     public GameObject playerOne;
     public GameObject playerTwo;
@@ -25,10 +25,10 @@ public class TitileManager : MonoBehaviour
 
         collectables = GameObject.FindGameObjectsWithTag("COL");
         players = GameObject.FindGameObjectsWithTag("Player");
-        for(int i = 0; i < collectables.Length; i++)
-        {
-            collectables[i].GetComponent<Collectible>().startingPosition = collectables[i].transform.position;
-        }
+        //for(int i = 0; i < collectables.Length; i++)
+        //{
+        //    collectables[i].GetComponent<Collectible>().startingPosition = collectables[i].transform.position;
+        //}
         readyToGo = false;
 
     }
@@ -89,8 +89,8 @@ public class TitileManager : MonoBehaviour
     private void startGame()
     {
 
-        collectables = GameObject.FindGameObjectsWithTag("COL");
-        resetCollectables();
+        //collectables = GameObject.FindGameObjectsWithTag("COL");
+        //resetCollectables();
         if(collectables.Length <= 0)
         {
             SceneManager.LoadScene(1, LoadSceneMode.Single);

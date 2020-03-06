@@ -43,7 +43,7 @@ public class PlayerBehaviour : MonoBehaviour
         PlayerPrefs.SetInt("Score", _score);
         PlayerPrefs.SetInt("WinningPlayer", playerID);
 
-        SceneManager.LoadScene(2);
+        Destroy(gameObject);
     }
 
     private IEnumerator flickerSprite(GameObject player)

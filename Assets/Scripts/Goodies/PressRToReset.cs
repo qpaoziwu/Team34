@@ -14,9 +14,9 @@ public class PressRToReset : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKey(KeyCode.R))
+        if(Input.GetKey(KeyCode.F5))
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene(1);
         }
     }
 }
