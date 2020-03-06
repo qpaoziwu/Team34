@@ -1,18 +1,50 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System;
+using System.Collections;
 
-public class difficultyManager : MonoBehaviour
+public class DifficultyManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [Serializable]
+    public struct DifficultyPair
     {
-        
+        public int threshold;
+        public float newSpeed;
+    }
+    private LevelController controller;
+    public float startSpeed;
+    public DifficultyPair[] difficulty;
+
+    private void Start()
+    {
+        controller = GameObject.FindGameObjectWithTag("LevelScroller").GetComponent<LevelController>();
+        if (difficulty!=null)
+        {
+            StartCoroutine(CheckDifficulty());
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private IEnumerator CheckDifficulty()
     {
-        
+        while (true)
+        {
+            foreach (DifficultyPair _diff in difficulty)
+            {
+                if (controller.height == _diff.threshold)
+                {
+                    controller.scrollSpeed = _diff.newSpeed;
+                }
+            }
+            yield return new WaitForSeconds(3f);
+        }
+
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            controller.scrollSpeed = startSpeed;
+        }
+    }
+
 }

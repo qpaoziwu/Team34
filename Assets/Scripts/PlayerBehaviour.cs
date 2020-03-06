@@ -1,9 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEngine.SceneManagement;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerBehaviour : MonoBehaviour
 {
+    public int playerID;
+    private InputMovement _main;
+    private LevelController _level;
     public bool isLosingLife;
     public int lifes;
     public Vector3 startingPosition;
@@ -13,6 +16,8 @@ public class PlayerBehaviour : MonoBehaviour
         lifes = 3;
         startingPosition = transform.position;
         isLosingLife = false;
+        _main = GetComponent<InputMovement>();
+        _level = GameObject.FindGameObjectWithTag("LevelScroller").GetComponent<LevelController>();
     }
 
     // Update is called once per frame
@@ -21,7 +26,7 @@ public class PlayerBehaviour : MonoBehaviour
 
         if (lifes <= 0)
         {
-            Destroy(this.gameObject);
+            Die();
         }
         if (isLosingLife == true)
         {
@@ -31,6 +36,15 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
+    private void Die()
+    {
+        int _score = _main.collectedItems + (_level.height * 10);
+
+        PlayerPrefs.SetInt("Score", _score);
+        PlayerPrefs.SetInt("WinningPlayer", playerID);
+
+        SceneManager.LoadScene(2);
+    }
 
     private IEnumerator flickerSprite(GameObject player)
     {
@@ -60,5 +74,5 @@ public class PlayerBehaviour : MonoBehaviour
         yield return new WaitForSeconds(0.15f);
     }
 
-    
+
 }
