@@ -18,14 +18,15 @@ public class uiTextManager : MonoBehaviour
         scoreText();
         if (playerOne!=null)
         {
+            scoreText();
             playerOneScore.text = "x  " + playerOne.GetComponent<InputMovement>().collectedItems;
             playerOneLife.text = "Lives:  " + playerOne.GetComponent<PlayerBehaviour>().lifes;
         }
 
         if (playerTwo != null)
         {
+            scoreText();
             playerTwoScore.text = "x  " + playerTwo.GetComponent<InputMovement>().collectedItems;
-
             playerTwoLife.text = "Lives:  " + playerTwo.GetComponent<PlayerBehaviour>().lifes;
         }
         //playerOneLives.text = "Player  one  lives:  " + playerOne.GetComponent<PlayerBehaviour>().lives;
