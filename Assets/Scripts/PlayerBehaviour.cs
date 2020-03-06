@@ -4,38 +4,32 @@ using UnityEngine;
 
 public class PlayerBehaviour : MonoBehaviour
 {
-    public int lives;
     public bool isLosingLife;
+    public int lifes;
     public Vector3 startingPosition;
     // Start is called before the first frame update
     void Start()
     {
+        lifes = 3;
         startingPosition = transform.position;
-        lives = 3;
         isLosingLife = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(isLosingLife == true)
-        {
-            lives -= 1;
-            isLosingLife = false;
-            StartCoroutine(flickerSprite(this.gameObject));
-            
-        }
-        //if the player has it the bottom of the screen
 
-        if(lives <= 0)
+        if (lifes <= 0)
         {
-            //This is where one player will be eleminated 
-            //If the ammount of objects witht he player tag is less or equal to zero then the game is reset
             Destroy(this.gameObject);
         }
-        
+        if (isLosingLife == true)
+        {
+            lifes -= 1;
+            isLosingLife = false;
+            StartCoroutine(flickerSprite(this.gameObject));
+        }
     }
-
 
 
     private IEnumerator flickerSprite(GameObject player)

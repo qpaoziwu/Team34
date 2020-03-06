@@ -8,15 +8,18 @@ public class Collectible : MonoBehaviour
     private ObjectPooler pool;
     public Vector3 startingPosition;
 
-
-    private void Start()
+    private void OnEnable()
     {
-        controller = GameObject.FindGameObjectWithTag("LevelScroller").GetComponent<LevelController>();
-        pool = GameObject.FindGameObjectWithTag("ObjectPooler").GetComponent<ObjectPooler>();
         if (GetComponent<BoxCollider2D>().isTrigger == true)
         {
             GetComponent<BoxCollider2D>().isTrigger = false;
         }
+    }
+    private void Start()
+    {
+        controller = GameObject.FindGameObjectWithTag("LevelScroller").GetComponent<LevelController>();
+        pool = GameObject.FindGameObjectWithTag("ObjectPooler").GetComponent<ObjectPooler>();
+
     }
 
     private void Update()
@@ -34,12 +37,5 @@ public class Collectible : MonoBehaviour
         {
             pool.Drown(gameObject);
         }
-    }
-
-    private void shootOut(int power)
-    {
-        this.GetComponent<Rigidbody2D>().velocity
-                = (Vector2.up * power * 2 * Time.deltaTime);
-
     }
 }
