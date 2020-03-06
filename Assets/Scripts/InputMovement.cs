@@ -158,8 +158,19 @@ public class InputMovement : MonoBehaviour
         {
             rope.SetPosition(0, transform.position);
             rope.SetPosition(1, RopePoint.position);
+            if (Vector2.Distance(transform.position, RopePoint.position) > 5)
+            {
+                rope.enabled = false;
+            }
         }
-        
+        if (RopePoint.gameObject.layer == 10)
+        {
+            if (Vector2.Distance(transform.position, RopePoint.position) < 0.5f)
+            {
+                pool.Drown(RopePoint.gameObject);
+            }
+        }
+
         // Sprite Animation Parameters
         AnimateSprite();
     }
@@ -260,9 +271,12 @@ public class InputMovement : MonoBehaviour
 
                 Hookshot(H_Axis());
             }
-            if (!Input.GetKey(k[1]) || transform.position.y > RopePoint.transform.position.y)
+            if (!Input.GetKey(k[1]) )
             {
-                rope.enabled = false;
+
+                {
+                    rope.enabled = false;
+                }
             }
             if (Input.GetKeyUp(k[1]))
             {
@@ -370,6 +384,7 @@ public class InputMovement : MonoBehaviour
                     //3) pull collectiable to self
                     if (box.TargetsInRange[0].gameObject.layer == 10)
                     {
+                        collectedItems += 1; 
                         Vector2 dirToSelf = gameObject.transform.position - box.TargetsInRange[0].position;
                         StartCoroutine(RopeItUp(box.TargetsInRange[0].transform, true));
 
@@ -404,6 +419,7 @@ public class InputMovement : MonoBehaviour
             if (_distance < minDistance || _distance > maxDistance)
             {
                 isRoping = false;
+
                 if (_target.CompareTag("COL"))
                 {
                     _target.gameObject.GetComponent<BoxCollider2D>().isTrigger = false;
@@ -420,6 +436,13 @@ public class InputMovement : MonoBehaviour
             }
             yield return new WaitForEndOfFrame();
         }
+
+        if (rope.enabled)
+        {
+            yield return new WaitForSeconds(0.3f);
+            rope.enabled = false;
+        }
+
     }
 
     public float HitDirectionCheck(Transform t, string h, string v)
