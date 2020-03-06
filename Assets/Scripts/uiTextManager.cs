@@ -12,9 +12,10 @@ public class uiTextManager : MonoBehaviour
     public Text score;
     public GameObject playerOne;
     public GameObject playerTwo;
+    public LevelController Level;
     public int playerOnecollectedItems;
     public int playerTwocollectedItems;
-
+    public int levelScore;
     public int scoreAmmount;
     void Update()
     {
@@ -34,12 +35,16 @@ public class uiTextManager : MonoBehaviour
             playerTwocollectedItems = playerTwo.GetComponent<InputMovement>().collectedItems;
 
         }
+        if (Level != null)
+        {
+            levelScore = Level.height; 
+        }
         //playerOneLives.text = "Player  one  lives:  " + playerOne.GetComponent<PlayerBehaviour>().lives;
     }
 
     private void scoreText()
     {
-        scoreAmmount = (playerOnecollectedItems + playerTwocollectedItems) * 100;
+        scoreAmmount = (playerOnecollectedItems + playerTwocollectedItems) * 100 + levelScore*10;
         score.text = " SCORE: " + scoreAmmount;
     }
 }

@@ -47,8 +47,17 @@ public class LevelController : MonoBehaviour
     {
         while (true)
         {
-            height++;
-            yield return new WaitForSeconds(1f / scrollSpeed);
+            
+            if (scrollSpeed>0)
+            {
+                height++;
+                yield return new WaitForSeconds(1f / scrollSpeed);
+            }
+            else
+            {
+                yield return new WaitForEndOfFrame();
+            }
+            
         }
     }
 

@@ -51,7 +51,7 @@ public class BoxTarget2D : MonoBehaviour
     {
         TaggedLayers.Add(9); //Player Layer
         TaggedLayers.Add(10); //Collectible Layer
-        TaggedLayers.Add(11); //Enemy Layer
+        //TaggedLayers.Add(11); //Enemy Layer
         TaggedLayers.Add(12); //Terrian Layer
         //TaggedLayers.Add(LayerMask.GetMask("Collectibles")); //Libee Layer
         //TaggedLayers.Add(LayerMask.GetMask("Enemies")); //Enemy Layer
