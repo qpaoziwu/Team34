@@ -48,7 +48,7 @@ public class InputMovement : MonoBehaviour
     public float shotSpeed;
     public float minDistance;
     public float maxDistance;
-    private LineRenderer rope;
+    public LineRenderer rope;
     public float pullSpeed;
     KeyCode[] keyboardInput = new KeyCode[8];
     KeyCode[] p1Input = new KeyCode[8];
