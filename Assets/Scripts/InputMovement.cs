@@ -69,6 +69,7 @@ public class InputMovement : MonoBehaviour
     public AudioClip grappleError;
     public AudioClip gemGet;
 
+    public GameObject doubleJumpFX;
 
     void SetInputs()
     {
@@ -296,6 +297,7 @@ public class InputMovement : MonoBehaviour
                     audioSource.pitch = jumpPitch;
                     //Sound Jump
                     audioSource.PlayOneShot(jump, 1.0f);
+                    Instantiate(doubleJumpFX, transform.position, Quaternion.identity);
 
                     doubleJumped = true;
                     // rb.AddRelativeForce(Vector2.up * jumpVelocity*0.9f + new Vector2(Input.GetAxisRaw("Horizontal") * 0.5f, 0f) * Time.deltaTime, ForceMode2D.Impulse);
