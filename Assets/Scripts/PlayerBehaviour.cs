@@ -7,12 +7,10 @@ public class PlayerBehaviour : MonoBehaviour
     public bool isLosingLife;
     public int lifes;
     public Vector3 startingPosition;
-    private bool hitOnceWithoutGems;
     // Start is called before the first frame update
     void Start()
     {
         lifes = 3;
-        hitOnceWithoutGems = false;
         startingPosition = transform.position;
         isLosingLife = false;
     }
@@ -30,8 +28,6 @@ public class PlayerBehaviour : MonoBehaviour
             lifes -= 1;
             isLosingLife = false;
             StartCoroutine(flickerSprite(this.gameObject));
-            this.GetComponent<InputMovement>().collectedItems = 0;
-            hitOnceWithoutGems = true;
         }
     }
 
